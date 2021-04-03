@@ -54,3 +54,12 @@ lazy val `akka-serialization` =
       "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
     )
   )
+
+lazy val `akka-streams` = (project in file("akka-streams")).settings(
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
+    "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion % Test,
+    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
+  )
+)

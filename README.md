@@ -11,3 +11,7 @@ This repository contains sample codes written by myself to practice.
 - [Classic Serialization • Akka Documentation](https://doc.akka.io/docs/akka/current/serialization-classic.html)
 - [Serialization • Akka Documentation](https://doc.akka.io/docs/akka/current/serialization.html)
 - [Serialization with Jackson • Akka Documentation](https://doc.akka.io/docs/akka/current/serialization-jackson.html)
+
+## [Akka Streams](/akka-streams)
+
+- [Streams • Akka Documentation](https://doc.akka.io/docs/akka/current/stream/index.html)
