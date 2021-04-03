@@ -10,9 +10,10 @@ object ChatRoom {
   // --
 
   sealed trait RoomCommand
-  final case class GetSession(screenName: String,
-                              replyTo: ActorRef[SessionEvent])
-      extends RoomCommand
+  final case class GetSession(
+      screenName: String,
+      replyTo: ActorRef[SessionEvent]
+  ) extends RoomCommand
 
   sealed trait SessionEvent
   final case class SessionGranted(session: ActorRef[PostMessage])
@@ -26,9 +27,10 @@ object ChatRoom {
 
   // --
 
-  private final case class PublishSessionMessage(screenName: String,
-                                                 message: String)
-      extends RoomCommand
+  private final case class PublishSessionMessage(
+      screenName: String,
+      message: String
+  ) extends RoomCommand
   private final case class NotifyClient(message: MessagePosted)
       extends SessionCommand
 
@@ -37,7 +39,7 @@ object ChatRoom {
   }
 
   private def chatRoom(
-    sessions: List[ActorRef[SessionCommand]]
+      sessions: List[ActorRef[SessionCommand]]
   ): Behavior[RoomCommand] = {
     Behaviors.receive { (context, message) =>
       message match {
@@ -56,9 +58,9 @@ object ChatRoom {
     }
   }
   private def session(
-    room: ActorRef[PublishSessionMessage],
-    screenName: String,
-    client: ActorRef[SessionEvent]
+      room: ActorRef[PublishSessionMessage],
+      screenName: String,
+      client: ActorRef[SessionEvent]
   ): Behavior[SessionCommand] = {
     Behaviors.receiveMessage {
       case PostMessage(message) =>
@@ -102,9 +104,8 @@ object Main extends App {
       val gabbler = context.spawn(Gabbler(), "gabbler")
       context.watch(gabbler)
       chatRoom ! ChatRoom.GetSession("ol' Gabbler", gabbler)
-      Behaviors.receiveSignal {
-        case (_, Terminated(_)) =>
-          Behaviors.stopped
+      Behaviors.receiveSignal { case (_, Terminated(_)) =>
+        Behaviors.stopped
       }
     }
   }

@@ -15,7 +15,7 @@ trait DB {
 
 object DB {
   def apply(): DB = new DB {
-    private val store: mutable.Map[String,Int] = mutable.Map.empty
+    private val store: mutable.Map[String, Int] = mutable.Map.empty
     override def save(id: String, value: Int): Future[Done] = {
       Future.successful {
         store += id -> value
@@ -49,12 +49,11 @@ object DataAccess {
   }
 }
 
-class DataAccess
-(
-  context: ActorContext[DataAccess.Command],
-  buffer: StashBuffer[DataAccess.Command],
-  id: String,
-  db: DB
+class DataAccess(
+    context: ActorContext[DataAccess.Command],
+    buffer: StashBuffer[DataAccess.Command],
+    id: String,
+    db: DB
 ) {
   import DataAccess._
 
@@ -80,7 +79,7 @@ class DataAccess
         Behaviors.same
       case Save(value, replyTo) =>
         context.pipeToSelf(db.save(id, value)) {
-          case Success(_) => SaveSuccess
+          case Success(_)     => SaveSuccess
           case Failure(cause) => DBError(cause)
         }
         saving(value, replyTo)
@@ -108,7 +107,8 @@ object StashExample extends App {
       Behaviors.setup { context =>
         val alice = context.spawn(DataAccess("alice", db), "alice")
         val john = context.spawn(DataAccess("john", db), "john")
-        val logger = context.spawn(Behaviors.logMessages(Behaviors.ignore[Any]), "logger")
+        val logger =
+          context.spawn(Behaviors.logMessages(Behaviors.ignore[Any]), "logger")
 
         alice ! Save(1, logger)
         alice ! Get(logger)

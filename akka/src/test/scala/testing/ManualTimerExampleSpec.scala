@@ -1,15 +1,18 @@
 package testing
 
-import akka.actor.testkit.typed.scaladsl.{ManualTime, ScalaTestWithActorTestKit, TestProbe}
+import akka.actor.testkit.typed.scaladsl.{
+  ManualTime,
+  ScalaTestWithActorTestKit,
+  TestProbe
+}
 import akka.actor.typed.scaladsl.Behaviors
 import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent.duration.DurationInt
 
 final class ManualTimerExampleSpec
-  extends ScalaTestWithActorTestKit(ManualTime.config)
-  with AnyWordSpecLike
-{
+    extends ScalaTestWithActorTestKit(ManualTime.config)
+    with AnyWordSpecLike {
   val manualTime: ManualTime = ManualTime()
 
   "A timer" must {

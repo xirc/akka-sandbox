@@ -14,7 +14,8 @@ object RequestResponseWithAskFromOutsideActorsExample extends App {
 
     sealed trait Command
 
-    case class GiveMeCookies(count: Int, replyTo: ActorRef[Reply]) extends Command
+    case class GiveMeCookies(count: Int, replyTo: ActorRef[Reply])
+        extends Command
 
     sealed trait Reply
 
@@ -23,14 +24,13 @@ object RequestResponseWithAskFromOutsideActorsExample extends App {
     case class InvalidRequest(reason: String) extends Reply
 
     def apply(): Behavior[Command] = {
-      Behaviors.receiveMessage {
-        case GiveMeCookies(count, replyTo) =>
-          if (count >= 5) {
-            replyTo ! InvalidRequest("Too many cookies.")
-          } else {
-            replyTo ! Cookies(count)
-          }
-          Behaviors.same
+      Behaviors.receiveMessage { case GiveMeCookies(count, replyTo) =>
+        if (count >= 5) {
+          replyTo ! InvalidRequest("Too many cookies.")
+        } else {
+          replyTo ! Cookies(count)
+        }
+        Behaviors.same
       }
     }
   }

@@ -10,7 +10,9 @@ import scala.util.Try
 object Producer {
   case class Message(i: Int, replyTo: ActorRef[Try[Int]])
 }
-class Producer(publisher: ActorRef[Producer.Message])(implicit scheduler: Scheduler) {
+class Producer(publisher: ActorRef[Producer.Message])(implicit
+    scheduler: Scheduler
+) {
   def produce(messages: Int)(implicit timeout: Timeout): Unit = {
     (0 until messages).foreach(publish)
   }

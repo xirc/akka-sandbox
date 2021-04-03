@@ -10,10 +10,9 @@ object Worker {
   def apply(): Behavior[Command] = {
     Behaviors.setup { context =>
       context.log.info("Starting worker")
-      Behaviors.receiveMessage {
-        case DoLog(text) =>
-          context.log.info2("{} - Got message {}", context.self.path.name, text)
-          Behaviors.same
+      Behaviors.receiveMessage { case DoLog(text) =>
+        context.log.info2("{} - Got message {}", context.self.path.name, text)
+        Behaviors.same
       }
     }
   }

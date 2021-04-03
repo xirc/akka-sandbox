@@ -11,10 +11,13 @@ object TypedToClassicExample extends App {
     def props(): classic.Props = classic.Props(new Classic())
   }
   class Classic extends classic.Actor with classic.ActorLogging {
-    override def receive: Receive = {
-      case Typed.Ping(replyTo) =>
-        log.info("Received Ping from {}, and then Send back to {}", sender(), replyTo)
-        replyTo ! Typed.Pong
+    override def receive: Receive = { case Typed.Ping(replyTo) =>
+      log.info(
+        "Received Ping from {}, and then Send back to {}",
+        sender(),
+        replyTo
+      )
+      replyTo ! Typed.Pong
     }
   }
 
@@ -29,16 +32,14 @@ object TypedToClassicExample extends App {
         context.watch(classicOne)
         classicOne.tell(Typed.Ping(context.self), context.self.toClassic)
         Behaviors
-          .receivePartial[Command] {
-            case (context, Pong) =>
-              context.log.info("Received Pong")
-              context.stop(classicOne)
-              Behaviors.same
+          .receivePartial[Command] { case (context, Pong) =>
+            context.log.info("Received Pong")
+            context.stop(classicOne)
+            Behaviors.same
           }
-          .receiveSignal {
-            case (_, Terminated(ref)) =>
-              context.log.info("Received Terminated({})", ref)
-              Behaviors.stopped
+          .receiveSignal { case (_, Terminated(ref)) =>
+            context.log.info("Received Terminated({})", ref)
+            Behaviors.stopped
           }
       }
     }

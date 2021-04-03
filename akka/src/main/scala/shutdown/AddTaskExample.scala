@@ -16,7 +16,8 @@ object AddTaskExample extends App {
         implicit val sys = context.system
         val myActor = context.spawn(MyActor(), "my-actor")
         CoordinatedShutdown(context.system).addTask(
-          CoordinatedShutdown.PhaseBeforeServiceUnbind, "my-task"
+          CoordinatedShutdown.PhaseBeforeServiceUnbind,
+          "my-task"
         ) { () =>
           implicit val timeout: Timeout = 5.seconds
           myActor.ask(MyActor.Stop)

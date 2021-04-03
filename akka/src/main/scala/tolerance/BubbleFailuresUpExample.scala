@@ -1,14 +1,21 @@
 package tolerance
 
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorRef, ActorSystem, Behavior, DeathPactException, SupervisorStrategy}
+import akka.actor.typed.{
+  ActorRef,
+  ActorSystem,
+  Behavior,
+  DeathPactException,
+  SupervisorStrategy
+}
 
 object BubbleFailuresUpExample extends App {
 
   object Protocol {
     sealed trait Command
     final case class Fail(text: String) extends Command
-    final case class Hello(text: String, replyTo: ActorRef[String]) extends Command
+    final case class Hello(text: String, replyTo: ActorRef[String])
+        extends Command
   }
 
   object Worker {
@@ -63,7 +70,10 @@ object BubbleFailuresUpExample extends App {
     def apply(): Behavior[Command] = {
       Behaviors.setup { context =>
         val boss = context.spawn(Boss(), "boss")
-        val client = context.spawn(Behaviors.logMessages(Behaviors.ignore[String]), "client")
+        val client = context.spawn(
+          Behaviors.logMessages(Behaviors.ignore[String]),
+          "client"
+        )
         Behaviors.receiveMessage[Command] {
           case hello: Hello =>
             boss ! hello.copy(replyTo = client)

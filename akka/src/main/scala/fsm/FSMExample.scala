@@ -17,7 +17,8 @@ object FSMExample extends App {
 
     private sealed trait Data
     private case object Uninitialized extends Data
-    private final case class Todo(target: ActorRef[Batch], queue: Seq[Any]) extends Data
+    private final case class Todo(target: ActorRef[Batch], queue: Seq[Any])
+        extends Data
 
     def apply(): Behavior[Event] = idle(Uninitialized)
 
@@ -49,7 +50,8 @@ object FSMExample extends App {
   }
 
   val system = ActorSystem(Buncher(), "system")
-  val logger = system.systemActorOf(Behaviors.logMessages(Behaviors.ignore[Any]), "logger")
+  val logger =
+    system.systemActorOf(Behaviors.logMessages(Behaviors.ignore[Any]), "logger")
 
   import Buncher._
   system ! SetTarget(logger)

@@ -12,15 +12,21 @@ import scala.util.{Failure, Success}
 
 object SendFutureResultToSelf extends App {
 
-  final case class Customer(id: String, version: Long, name: String, address: String)
+  final case class Customer(
+      id: String,
+      version: Long,
+      name: String,
+      address: String
+  )
 
   trait CustomerDataAccess {
     def update(value: Customer): Future[Done]
   }
 
   object CustomerDataAccess {
-    def apply(processingTime: FiniteDuration)
-             (implicit executionContext: ExecutionContext): CustomerDataAccess = {
+    def apply(
+        processingTime: FiniteDuration
+    )(implicit executionContext: ExecutionContext): CustomerDataAccess = {
       new CustomerDataAccess {
         override def update(value: Customer): Future[Done] = {
           Future {
@@ -36,16 +42,20 @@ object SendFutureResultToSelf extends App {
 
     sealed trait Command
 
-    final case class Update(value: Customer, replyTo: ActorRef[UpdateResult]) extends Command
+    final case class Update(value: Customer, replyTo: ActorRef[UpdateResult])
+        extends Command
 
     sealed trait UpdateResult
 
     final case class UpdateSuccess(id: String) extends UpdateResult
 
-    final case class UpdateFailure(id: String, reason: String) extends UpdateResult
+    final case class UpdateFailure(id: String, reason: String)
+        extends UpdateResult
 
-    private final case class WrappedUpdateResult
-    (result: UpdateResult, replyTo: ActorRef[UpdateResult]) extends Command
+    private final case class WrappedUpdateResult(
+        result: UpdateResult,
+        replyTo: ActorRef[UpdateResult]
+    ) extends Command
 
     private val MaxOperationsInProgress = 10
 
@@ -53,18 +63,29 @@ object SendFutureResultToSelf extends App {
       apply(dataAccess, operationsInProgress = 0)
     }
 
-    private def apply(dataAccess: CustomerDataAccess, operationsInProgress: Int): Behavior[Command] = {
+    private def apply(
+        dataAccess: CustomerDataAccess,
+        operationsInProgress: Int
+    ): Behavior[Command] = {
       Behaviors.receive { (context, command) =>
         command match {
           case Update(value, replyTo) =>
             if (operationsInProgress == MaxOperationsInProgress) {
-              replyTo ! UpdateFailure(value.id, s"Max $MaxOperationsInProgress concurrent operations supported")
+              replyTo ! UpdateFailure(
+                value.id,
+                s"Max $MaxOperationsInProgress concurrent operations supported"
+              )
               Behaviors.same
             } else {
               val resultFuture = dataAccess.update(value)
               context.pipeToSelf(resultFuture) {
-                case Success(_) => WrappedUpdateResult(UpdateSuccess(value.id), replyTo)
-                case Failure(e) => WrappedUpdateResult(UpdateFailure(value.id, e.getMessage), replyTo)
+                case Success(_) =>
+                  WrappedUpdateResult(UpdateSuccess(value.id), replyTo)
+                case Failure(e) =>
+                  WrappedUpdateResult(
+                    UpdateFailure(value.id, e.getMessage),
+                    replyTo
+                  )
               }
               apply(dataAccess, operationsInProgress + 1)
             }
@@ -81,7 +102,8 @@ object SendFutureResultToSelf extends App {
       Behaviors.setup { context =>
         import context.executionContext
         val dataAccess = CustomerDataAccess(100.millis)
-        val repository = context.spawn(CustomerRepository(dataAccess), "repository")
+        val repository =
+          context.spawn(CustomerRepository(dataAccess), "repository")
         Behaviors.receiveMessage { message =>
           repository ! message
           Behaviors.same

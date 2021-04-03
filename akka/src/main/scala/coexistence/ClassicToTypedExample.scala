@@ -3,7 +3,7 @@ package coexistence
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
-import akka.{ actor => classic }
+import akka.{actor => classic}
 
 object ClassicToTypedExample extends App {
 
@@ -44,7 +44,6 @@ object ClassicToTypedExample extends App {
         context.stop(self)
     }
   }
-
 
   val system: classic.ActorSystem = classic.ActorSystem("class-to-typed-system")
   val typedSystem: ActorSystem[Nothing] = system.toTyped
