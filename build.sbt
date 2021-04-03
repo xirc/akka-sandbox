@@ -37,7 +37,6 @@ lazy val akka = (project in file("akka")).settings(
     "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion,
     "ch.qos.logback" % "logback-classic" % "1.2.3",
     "org.scalatest" %% "scalatest-wordspec" % "3.2.2" % Test,
-    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.2" % Test,
+    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.2" % Test
   )
 )
-
