@@ -9,6 +9,27 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings"
 )
 
+addCommandAlias(
+  name = "ciFormat",
+  Seq(
+    "scalafmtSbt",
+    "scalafmtAll"
+  ).mkString(";")
+)
+
+addCommandAlias(
+  "ciCheck",
+  Seq(
+    "clean",
+    "scalafmtSbtCheck",
+    "scalafmtCheckAll",
+    "test:compile",
+    "test"
+  ).mkString(";")
+)
+
+// ===
+
 val AkkaVersion = "2.6.9"
 lazy val akka = (project in file("akka")).settings(
   libraryDependencies ++= Seq(
@@ -19,3 +40,4 @@ lazy val akka = (project in file("akka")).settings(
     "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.2" % Test,
   )
 )
+
