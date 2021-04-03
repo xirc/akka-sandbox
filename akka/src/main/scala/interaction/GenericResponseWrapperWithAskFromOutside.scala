@@ -15,19 +15,21 @@ object GenericResponseWrapperWithAskFromOutside extends App {
 
     sealed trait Command
 
-    final case class GiveMeCookies(count: Int, replyTo: ActorRef[StatusReply[Cookies]]) extends Command
+    final case class GiveMeCookies(
+        count: Int,
+        replyTo: ActorRef[StatusReply[Cookies]]
+    ) extends Command
 
     final case class Cookies(count: Int)
 
     def apply(): Behavior[Command] = {
-      Behaviors.receiveMessage {
-        case GiveMeCookies(count, replyTo) =>
-          if (count >= 5) {
-            replyTo ! StatusReply.Error("Too many cookies.")
-          } else {
-            replyTo ! StatusReply.Success(Cookies(count))
-          }
-          Behaviors.same
+      Behaviors.receiveMessage { case GiveMeCookies(count, replyTo) =>
+        if (count >= 5) {
+          replyTo ! StatusReply.Error("Too many cookies.")
+        } else {
+          replyTo ! StatusReply.Success(Cookies(count))
+        }
+        Behaviors.same
       }
     }
   }

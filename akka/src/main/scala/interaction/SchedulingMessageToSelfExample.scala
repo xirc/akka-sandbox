@@ -19,19 +19,22 @@ object SchedulingMessageToSelfExample extends App {
 
     private case object TimerKey
 
-    def apply(target: ActorRef[Batch], after: FiniteDuration, maxSize: Int): Behavior[Command] = {
+    def apply(
+        target: ActorRef[Batch],
+        after: FiniteDuration,
+        maxSize: Int
+    ): Behavior[Command] = {
       Behaviors.withTimers[Command] { timers =>
         new Buncher(timers, target, after, maxSize).idle()
       }
     }
   }
 
-  class Buncher
-  (
-    timers: TimerScheduler[Buncher.Command],
-    target: ActorRef[Buncher.Batch],
-    after: FiniteDuration,
-    maxSize: Int
+  class Buncher(
+      timers: TimerScheduler[Buncher.Command],
+      target: ActorRef[Buncher.Batch],
+      after: FiniteDuration,
+      maxSize: Int
   ) {
 
     import Buncher._
@@ -65,10 +68,14 @@ object SchedulingMessageToSelfExample extends App {
   }
 
   object Main {
-    def apply(after: FiniteDuration, maxSize: Int): Behavior[Buncher.Command] = {
+    def apply(
+        after: FiniteDuration,
+        maxSize: Int
+    ): Behavior[Buncher.Command] = {
       Behaviors.setup { context =>
         val batchExecutor = context.spawn(BatchExecutor(), "batch-executor")
-        val buncher = context.spawn(Buncher(batchExecutor, after, maxSize), "buncher")
+        val buncher =
+          context.spawn(Buncher(batchExecutor, after, maxSize), "buncher")
         Behaviors.receiveMessage { message =>
           buncher ! message
           Behaviors.same

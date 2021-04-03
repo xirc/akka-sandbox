@@ -14,7 +14,8 @@ object RequestResponseWithAskBetweenTwoActorsExample extends App {
 
     sealed trait Command
 
-    case class OpenThePodBayDoorsPlease(replyTo: ActorRef[Response]) extends Command
+    case class OpenThePodBayDoorsPlease(replyTo: ActorRef[Response])
+        extends Command
 
     case class Response(message: String)
 
@@ -39,19 +40,19 @@ object RequestResponseWithAskBetweenTwoActorsExample extends App {
 
         context.ask(hal, Hal.OpenThePodBayDoorsPlease) {
           case Success(Hal.Response(message)) => AdaptedResponse(message)
-          case Failure(_) => AdaptedResponse("Request failed")
+          case Failure(_)                     => AdaptedResponse("Request failed")
         }
 
         val requestId = 1
         context.ask(hal, Hal.OpenThePodBayDoorsPlease) {
-          case Success(Hal.Response(message)) => AdaptedResponse(s"$requestId: $message")
+          case Success(Hal.Response(message)) =>
+            AdaptedResponse(s"$requestId: $message")
           case Failure(_) => AdaptedResponse(s"$requestId: Request failed")
         }
 
-        Behaviors.receiveMessage {
-          case AdaptedResponse(message) =>
-            context.log.info("Got response from hal: {}", message)
-            Behaviors.same
+        Behaviors.receiveMessage { case AdaptedResponse(message) =>
+          context.log.info("Got response from hal: {}", message)
+          Behaviors.same
         }
       }
     }

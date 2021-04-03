@@ -7,10 +7,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.slf4j.event.Level
 
-final class SyncTestingExample
-  extends AnyWordSpec
-  with Matchers
-{
+final class SyncTestingExample extends AnyWordSpec with Matchers {
   "Hello" should {
     "spawn children with a name" in {
       val testkit = BehaviorTestKit(Hello())

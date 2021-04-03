@@ -18,23 +18,24 @@ object WatchingActorExample extends App {
     }
 
     private def apply(jobs: Seq[ActorRef[Job.Command]]): Behavior[Command] = {
-      Behaviors.receive[Command] { (context, message) =>
-        message match {
-          case SpawnJob(name) =>
-            context.log.info("Spawning job {}!", name)
-            val job = context.spawn(Job(name), name = name)
-            context.watch(job)
-            apply(job +: jobs)
-          case Execute(name, command) =>
-            val jobOpt = jobs.find(_.path.name == name)
-            jobOpt.foreach(_ ! command)
-            Behaviors.same
+      Behaviors
+        .receive[Command] { (context, message) =>
+          message match {
+            case SpawnJob(name) =>
+              context.log.info("Spawning job {}!", name)
+              val job = context.spawn(Job(name), name = name)
+              context.watch(job)
+              apply(job +: jobs)
+            case Execute(name, command) =>
+              val jobOpt = jobs.find(_.path.name == name)
+              jobOpt.foreach(_ ! command)
+              Behaviors.same
+          }
         }
-      }.receiveSignal {
-        case (context, Terminated(job)) =>
+        .receiveSignal { case (context, Terminated(job)) =>
           context.log.info("Job stopped: {}", job.path.name)
           apply(jobs.filterNot(_ == job))
-      }
+        }
     }
   }
 
@@ -45,13 +46,11 @@ object WatchingActorExample extends App {
     case object Terminate extends Command
 
     def apply(name: String): Behavior[Command] = {
-      Behaviors.receiveMessage[Command] {
-        case Terminate =>
-          Behaviors.stopped
-      } receiveSignal {
-        case (context, PostStop) =>
-          context.log.info("Worker {} stopped", name)
-          Behaviors.same
+      Behaviors.receiveMessage[Command] { case Terminate =>
+        Behaviors.stopped
+      } receiveSignal { case (context, PostStop) =>
+        context.log.info("Worker {} stopped", name)
+        Behaviors.same
       }
     }
   }

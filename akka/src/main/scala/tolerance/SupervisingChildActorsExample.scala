@@ -16,7 +16,10 @@ private object SupervisingChildActorsExample extends App {
     }
   }
 
-  private def parentCore(child1: ActorRef[String], child2: ActorRef[String]): Behavior[String] = {
+  private def parentCore(
+      child1: ActorRef[String],
+      child2: ActorRef[String]
+  ): Behavior[String] = {
     Behaviors.receiveMessage[String] { message =>
       val parts = message.split(" ")
       child1 ! parts(0)

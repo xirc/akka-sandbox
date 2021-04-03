@@ -9,7 +9,11 @@ object AdaptedResponseExample extends App {
 
     sealed trait Request
 
-    final case class StartTranslationJob(taskId: Int, site: String, replyTo: ActorRef[Response]) extends Request
+    final case class StartTranslationJob(
+        taskId: Int,
+        site: String,
+        replyTo: ActorRef[Response]
+    ) extends Request
 
     sealed trait Response
 
@@ -20,14 +24,13 @@ object AdaptedResponseExample extends App {
     final case class JobCompleted(taskId: Int, result: String) extends Response
 
     def apply(): Behavior[Request] = {
-      Behaviors.receiveMessage {
-        case job: StartTranslationJob =>
-          job.replyTo ! JobStarted(job.taskId)
-          for (p <- 0 to 100 by 10) {
-            job.replyTo ! JobProgress(job.taskId, p.toDouble)
-          }
-          job.replyTo ! JobCompleted(job.taskId, job.site.toUpperCase)
-          Behaviors.same
+      Behaviors.receiveMessage { case job: StartTranslationJob =>
+        job.replyTo ! JobStarted(job.taskId)
+        for (p <- 0 to 100 by 10) {
+          job.replyTo ! JobProgress(job.taskId, p.toDouble)
+        }
+        job.replyTo ! JobCompleted(job.taskId, job.site.toUpperCase)
+        Behaviors.same
       }
     }
   }
@@ -36,20 +39,29 @@ object AdaptedResponseExample extends App {
 
     sealed trait Command
 
-    final case class Translate(site: String, replyTo: ActorRef[String]) extends Command
+    final case class Translate(site: String, replyTo: ActorRef[String])
+        extends Command
 
-    private final case class WrappedBackendResponse(response: Backend.Response) extends Command
+    private final case class WrappedBackendResponse(response: Backend.Response)
+        extends Command
 
     def apply(backend: ActorRef[Backend.Request]): Behavior[Command] = {
       Behaviors.setup[Command] { context =>
         val backendResponseMapper: ActorRef[Backend.Response] =
           context.messageAdapter(WrappedBackendResponse)
 
-        def active(inProgress: Map[Int, ActorRef[String]], count: Int): Behavior[Command] = {
+        def active(
+            inProgress: Map[Int, ActorRef[String]],
+            count: Int
+        ): Behavior[Command] = {
           Behaviors.receiveMessage[Command] {
             case Translate(site, replyTo) =>
               val taskId = count + 1
-              backend ! Backend.StartTranslationJob(taskId, site, backendResponseMapper)
+              backend ! Backend.StartTranslationJob(
+                taskId,
+                site,
+                backendResponseMapper
+              )
               active(inProgress + (taskId -> replyTo), taskId)
             case wrapped: WrappedBackendResponse =>
               wrapped.response match {
@@ -77,7 +89,10 @@ object AdaptedResponseExample extends App {
       Behaviors.setup { context =>
         val backend = context.spawn(Backend(), "backend")
         val frontend = context.spawn(Frontend(backend), "frontend")
-        val client = context.spawn(Behaviors.logMessages(Behaviors.ignore[String]), "client")
+        val client = context.spawn(
+          Behaviors.logMessages(Behaviors.ignore[String]),
+          "client"
+        )
         frontend ! Frontend.Translate("hello", client)
         Behaviors.empty
       }

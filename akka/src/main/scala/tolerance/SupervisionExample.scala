@@ -8,7 +8,8 @@ private object SupervisionExample extends App {
   private object Counter {
     sealed trait Command
     final case class Increment(delta: Int) extends Command
-    final case class GetCount(replyTo: ActorRef[GetCountResponse]) extends Command
+    final case class GetCount(replyTo: ActorRef[GetCountResponse])
+        extends Command
     final case class GetCountResponse(name: String, value: Int)
     final case class InjectException(exception: Throwable) extends Command
 
@@ -57,7 +58,10 @@ private object SupervisionExample extends App {
     def apply(): Behavior[NotUsed] = {
       import Counter._
       Behaviors.setup { context =>
-        val client = context.spawn(Behaviors.logMessages(Behaviors.ignore[GetCountResponse]), "client")
+        val client = context.spawn(
+          Behaviors.logMessages(Behaviors.ignore[GetCountResponse]),
+          "client"
+        )
         val counter = context.spawn(CompositeCounter(), "counters")
 
         counter ! Increment(1)

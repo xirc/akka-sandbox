@@ -17,19 +17,20 @@ object AddCancellableTaskExample extends App {
         implicit val sys = context.system
         import sys.executionContext
 
-        val cancellable = CoordinatedShutdown(context.system).addCancellableTask(
-          CoordinatedShutdown.PhaseBeforeServiceUnbind, "cleanup"
-        ) { () =>
-          Future {
-            println("cleanup")
-            Done
+        val cancellable =
+          CoordinatedShutdown(context.system).addCancellableTask(
+            CoordinatedShutdown.PhaseBeforeServiceUnbind,
+            "cleanup"
+          ) { () =>
+            Future {
+              println("cleanup")
+              Done
+            }
           }
-        }
 
-        Behaviors.receiveMessage {
-          case Cancel =>
-            cancellable.cancel()
-            Behaviors.same
+        Behaviors.receiveMessage { case Cancel =>
+          cancellable.cancel()
+          Behaviors.same
         }
       }
     }

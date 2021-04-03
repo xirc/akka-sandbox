@@ -13,7 +13,10 @@ object GroupRouterExample extends App {
       Behaviors.setup { context =>
         for (i <- 1 to 4) {
           val worker = context.spawn(Worker(), s"worker-${i}")
-          context.system.receptionist ! Receptionist.Register(serviceKey, worker)
+          context.system.receptionist ! Receptionist.Register(
+            serviceKey,
+            worker
+          )
         }
         Routers.group(serviceKey)
       }

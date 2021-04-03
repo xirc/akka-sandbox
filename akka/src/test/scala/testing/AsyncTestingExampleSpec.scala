@@ -8,10 +8,9 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.concurrent.duration.DurationInt
 
 final class AsyncTestingExampleSpec
-  extends AnyWordSpec
-  with BeforeAndAfterAll
-  with Matchers
-{
+    extends AnyWordSpec
+    with BeforeAndAfterAll
+    with Matchers {
   val testkit = ActorTestKit()
   override def afterAll(): Unit = {
     try super.afterAll()

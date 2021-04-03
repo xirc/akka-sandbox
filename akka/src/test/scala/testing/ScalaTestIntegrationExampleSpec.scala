@@ -4,9 +4,8 @@ import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.scalatest.wordspec.AnyWordSpecLike
 
 final class ScalaTestIntegrationExampleSpec
-  extends ScalaTestWithActorTestKit
-  with AnyWordSpecLike
-{
+    extends ScalaTestWithActorTestKit
+    with AnyWordSpecLike {
   "something" should {
     "behave correctly" in {
       val pinger = testKit.spawn(Echo(), "ping")

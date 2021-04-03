@@ -28,7 +28,7 @@ object BlockingActorExample extends App {
       }
     }
     private def trigger(
-      i: Int
+        i: Int
     )(implicit executionContext: ExecutionContext): Future[Unit] = {
       println(s"Calling blocking future: ${i}")
       Future {

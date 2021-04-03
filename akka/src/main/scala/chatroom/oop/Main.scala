@@ -13,9 +13,10 @@ import akka.actor.typed.scaladsl.{
 
 object ChatRoom {
   sealed trait RoomCommand
-  final case class GetSession(screenName: String,
-                              replyTo: ActorRef[SessionEvent])
-      extends RoomCommand
+  final case class GetSession(
+      screenName: String,
+      replyTo: ActorRef[SessionEvent]
+  ) extends RoomCommand
 
   sealed trait SessionEvent
   final case class SessionGranted(session: ActorRef[PostMessage])
@@ -29,9 +30,10 @@ object ChatRoom {
 
   private final case class NotifyClient(message: MessagePosted)
       extends SessionCommand
-  private final case class PublishSessionMessage(screenName: String,
-                                                 message: String)
-      extends RoomCommand
+  private final case class PublishSessionMessage(
+      screenName: String,
+      message: String
+  ) extends RoomCommand
 
   def apply(): Behavior[RoomCommand] = {
     Behaviors.setup(context => new ChatRoomBehavior(context))
@@ -60,19 +62,22 @@ object ChatRoom {
   }
 
   object SessionBehavior {
-    def apply(room: ActorRef[PublishSessionMessage],
-              screenName: String,
-              client: ActorRef[SessionEvent]): Behavior[SessionCommand] = {
-      Behaviors.setup(
-        context => new SessionBehavior(context, room, screenName, client)
+    def apply(
+        room: ActorRef[PublishSessionMessage],
+        screenName: String,
+        client: ActorRef[SessionEvent]
+    ): Behavior[SessionCommand] = {
+      Behaviors.setup(context =>
+        new SessionBehavior(context, room, screenName, client)
       )
     }
   }
-  private final class SessionBehavior(context: ActorContext[SessionCommand],
-                                      room: ActorRef[PublishSessionMessage],
-                                      screenName: String,
-                                      client: ActorRef[SessionEvent])
-      extends AbstractBehavior[SessionCommand](context) {
+  private final class SessionBehavior(
+      context: ActorContext[SessionCommand],
+      room: ActorRef[PublishSessionMessage],
+      screenName: String,
+      client: ActorRef[SessionEvent]
+  ) extends AbstractBehavior[SessionCommand](context) {
     override def onMessage(msg: SessionCommand): Behavior[SessionCommand] = {
       msg match {
         case PostMessage(message) =>
@@ -122,9 +127,8 @@ object Main extends App {
       val gabbler = context.spawn(Gabbler(), "gabbler")
       context.watch(gabbler)
       chatRoom ! ChatRoom.GetSession("ol' Gabbler", gabbler)
-      Behaviors.receiveSignal {
-        case (_, Terminated(_)) =>
-          Behaviors.stopped
+      Behaviors.receiveSignal { case (_, Terminated(_)) =>
+        Behaviors.stopped
       }
     }
 

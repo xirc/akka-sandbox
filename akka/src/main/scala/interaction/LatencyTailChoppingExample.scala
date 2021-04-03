@@ -19,11 +19,13 @@ object LatencyTailChoppingExample extends App {
 
     private final case class WrappedReply[R](reply: R) extends Command
 
-    def apply[Reply: ClassTag](sendRequest: (Int, ActorRef[Reply]) => Unit,
-                               nextRequestAfter: FiniteDuration,
-                               replyTo: ActorRef[Reply],
-                               finalTimeout: FiniteDuration,
-                               timeoutReply: Reply): Behavior[Command] = {
+    def apply[Reply: ClassTag](
+        sendRequest: (Int, ActorRef[Reply]) => Unit,
+        nextRequestAfter: FiniteDuration,
+        replyTo: ActorRef[Reply],
+        finalTimeout: FiniteDuration,
+        timeoutReply: Reply
+    ): Behavior[Command] = {
       Behaviors.setup { context =>
         Behaviors.withTimers { timers =>
           val replyAdapter = context.messageAdapter[Reply](WrappedReply(_))
@@ -66,8 +68,10 @@ object LatencyTailChoppingExample extends App {
 
     private case object Failure extends Response
 
-    private def serverBehavior(processing: FiniteDuration,
-                               successRatio: Double): Behavior[Request] = {
+    private def serverBehavior(
+        processing: FiniteDuration,
+        successRatio: Double
+    ): Behavior[Request] = {
       Behaviors.logMessages {
         Behaviors.setup[Request] { context =>
           Behaviors.receiveMessage { request =>
@@ -105,8 +109,10 @@ object LatencyTailChoppingExample extends App {
         val timeout: FiniteDuration = 1000.millis
         val interval: FiniteDuration = 100.millis
 
-        def sendRequest(requestCount: Int,
-                        replyTo: ActorRef[Response]): Unit = {
+        def sendRequest(
+            requestCount: Int,
+            replyTo: ActorRef[Response]
+        ): Unit = {
           server ! Request(requestCount, replyTo)
         }
 

@@ -15,13 +15,15 @@ object GenericResponseWrapperExample extends App {
 
     sealed trait Command
 
-    case class OpenThePodBayDoorsPlease(replyTo: ActorRef[StatusReply[String]]) extends Command
+    case class OpenThePodBayDoorsPlease(replyTo: ActorRef[StatusReply[String]])
+        extends Command
 
     def apply(): Behavior[Command] = {
-      Behaviors.receiveMessage {
-        case OpenThePodBayDoorsPlease(replyTo) =>
-          replyTo ! StatusReply.Error("I'm sorry, Dave. I'm afraid I can't do that.")
-          Behaviors.same
+      Behaviors.receiveMessage { case OpenThePodBayDoorsPlease(replyTo) =>
+        replyTo ! StatusReply.Error(
+          "I'm sorry, Dave. I'm afraid I can't do that."
+        )
+        Behaviors.same
       }
     }
   }
@@ -45,10 +47,9 @@ object GenericResponseWrapperExample extends App {
             AdaptedResponse("Request failed")
         }
 
-        Behaviors.receiveMessage {
-          case AdaptedResponse(message) =>
-            context.log.info("Got response from hal: {}", message)
-            Behaviors.same
+        Behaviors.receiveMessage { case AdaptedResponse(message) =>
+          context.log.info("Got response from hal: {}", message)
+          Behaviors.same
         }
       }
     }

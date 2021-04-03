@@ -13,19 +13,23 @@ object ReceptionistExample extends App {
 
     def apply(): Behavior[Ping] = {
       Behaviors.setup { context =>
-        context.system.receptionist ! Receptionist.Register(PingServiceKey, context.self)
-        Behaviors.receiveMessage {
-          case Ping(replyTo) =>
-            context.log.info("Pinged by {}", replyTo)
-            replyTo ! Pong
-            Behaviors.same
+        context.system.receptionist ! Receptionist.Register(
+          PingServiceKey,
+          context.self
+        )
+        Behaviors.receiveMessage { case Ping(replyTo) =>
+          context.log.info("Pinged by {}", replyTo)
+          replyTo ! Pong
+          Behaviors.same
         }
       }
     }
   }
 
   object Pinger {
-    def apply(pingService: ActorRef[PingService.Ping]): Behavior[PingService.Pong.type] = {
+    def apply(
+        pingService: ActorRef[PingService.Ping]
+    ): Behavior[PingService.Pong.type] = {
       Behaviors.setup { context =>
         pingService ! PingService.Ping(context.self)
         Behaviors.receiveMessage { _ =>
@@ -58,11 +62,13 @@ object ReceptionistExample extends App {
   object PingManager {
     sealed trait Command
     case object PingAll extends Command
-    private case class ListingResponse(listing: Receptionist.Listing) extends Command
+    private case class ListingResponse(listing: Receptionist.Listing)
+        extends Command
 
     def apply(): Behavior[Command] = {
       Behaviors.setup { context =>
-        val adapter = context.messageAdapter[Receptionist.Listing](ListingResponse)
+        val adapter =
+          context.messageAdapter[Receptionist.Listing](ListingResponse)
         context.spawnAnonymous(PingService())
         Behaviors.receiveMessage {
           case PingAll =>

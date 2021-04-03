@@ -22,23 +22,24 @@ object StoppingActorExample extends App {
     }
 
     def apply(): Behavior[Command] = {
-      Behaviors.receive[Command] { (context, message) =>
-        message match {
-          case SpawnJob(name) =>
-            context.log.info("Spawning job {}!", name)
-            context.spawn(Job(name), name = name)
-            Behaviors.same
-          case GracefulShutdown =>
-            context.log.info("Initiating graceful shutdown...")
-            Behaviors.stopped { () =>
-              cleanup(context.system.log)
-            }
+      Behaviors
+        .receive[Command] { (context, message) =>
+          message match {
+            case SpawnJob(name) =>
+              context.log.info("Spawning job {}!", name)
+              context.spawn(Job(name), name = name)
+              Behaviors.same
+            case GracefulShutdown =>
+              context.log.info("Initiating graceful shutdown...")
+              Behaviors.stopped { () =>
+                cleanup(context.system.log)
+              }
+          }
         }
-      }.receiveSignal {
-        case (context, PostStop) =>
+        .receiveSignal { case (context, PostStop) =>
           context.log.info("Master stopped")
           Behaviors.same
-      }
+        }
     }
   }
 
@@ -47,10 +48,9 @@ object StoppingActorExample extends App {
     sealed trait Command
 
     def apply(name: String): Behavior[Command] = {
-      Behaviors.receiveSignal {
-        case (context, PostStop) =>
-          context.log.info("Worker {} stopped", name)
-          Behaviors.same
+      Behaviors.receiveSignal { case (context, PostStop) =>
+        context.log.info("Worker {} stopped", name)
+        Behaviors.same
       }
     }
   }

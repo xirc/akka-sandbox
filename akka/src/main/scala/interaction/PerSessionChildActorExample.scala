@@ -38,7 +38,8 @@ object PerSessionChildActorExample extends App {
 
     sealed trait Command
 
-    final case class LeaveHome(who: String, replyTo: ActorRef[ReadyToLeaveHome]) extends Command
+    final case class LeaveHome(who: String, replyTo: ActorRef[ReadyToLeaveHome])
+        extends Command
 
     final case class ReadyToLeaveHome(who: String, keys: Keys, wallet: Wallet)
 
@@ -46,49 +47,55 @@ object PerSessionChildActorExample extends App {
       Behaviors.setup { context =>
         val keyCabinet = context.spawn(KeyCabinet(), "key-cabinet")
         val drawer = context.spawn(Drawer(), "drawer")
-        Behaviors.receiveMessage {
-          case LeaveHome(who, replyTo) =>
-            context.spawn(prepareToLeaveHome(who, replyTo, keyCabinet, drawer), s"leaving-$who")
-            Behaviors.same
+        Behaviors.receiveMessage { case LeaveHome(who, replyTo) =>
+          context.spawn(
+            prepareToLeaveHome(who, replyTo, keyCabinet, drawer),
+            s"leaving-$who"
+          )
+          Behaviors.same
         }
       }
     }
 
-    private def prepareToLeaveHome
-    (
-      whoIsLeaving: String,
-      replyTo: ActorRef[ReadyToLeaveHome],
-      keyCabinet: ActorRef[KeyCabinet.GetKeys],
-      drawer: ActorRef[Drawer.GetWallet]
+    private def prepareToLeaveHome(
+        whoIsLeaving: String,
+        replyTo: ActorRef[ReadyToLeaveHome],
+        keyCabinet: ActorRef[KeyCabinet.GetKeys],
+        drawer: ActorRef[Drawer.GetWallet]
     ): Behavior[NotUsed] = {
-      Behaviors.setup[AnyRef] { context =>
-        var walletOpt: Option[Wallet] = None
-        var keysOpt: Option[Keys] = None
+      Behaviors
+        .setup[AnyRef] { context =>
+          var walletOpt: Option[Wallet] = None
+          var keysOpt: Option[Keys] = None
 
-        keyCabinet ! KeyCabinet.GetKeys(whoIsLeaving, context.self.narrow[Keys])
-        drawer ! Drawer.GetWallet(whoIsLeaving, context.self.narrow[Wallet])
+          keyCabinet ! KeyCabinet.GetKeys(
+            whoIsLeaving,
+            context.self.narrow[Keys]
+          )
+          drawer ! Drawer.GetWallet(whoIsLeaving, context.self.narrow[Wallet])
 
-        def nextBehavior(): Behavior[AnyRef] = {
-          (keysOpt, walletOpt) match {
-            case (Some(k), Some(w)) =>
-              replyTo ! ReadyToLeaveHome(whoIsLeaving, k, w)
-              Behaviors.stopped
+          def nextBehavior(): Behavior[AnyRef] = {
+            (keysOpt, walletOpt) match {
+              case (Some(k), Some(w)) =>
+                replyTo ! ReadyToLeaveHome(whoIsLeaving, k, w)
+                Behaviors.stopped
+              case _ =>
+                Behaviors.same
+            }
+          }
+
+          Behaviors.receiveMessage {
+            case w: Wallet =>
+              walletOpt = Some(w)
+              nextBehavior()
+            case k: Keys =>
+              keysOpt = Some(k)
+              nextBehavior()
             case _ =>
-              Behaviors.same
+              Behaviors.unhandled
           }
         }
-
-        Behaviors.receiveMessage {
-          case w: Wallet =>
-            walletOpt = Some(w)
-            nextBehavior()
-          case k: Keys =>
-            keysOpt = Some(k)
-            nextBehavior()
-          case _ =>
-            Behaviors.unhandled
-        }
-      }.narrow[NotUsed]
+        .narrow[NotUsed]
     }
   }
 
@@ -97,7 +104,8 @@ object PerSessionChildActorExample extends App {
       Behaviors.setup { context =>
         val home = context.spawn(Home(), "home")
         val client = context.spawn(
-          Behaviors.logMessages(Behaviors.ignore[Home.ReadyToLeaveHome]), "client"
+          Behaviors.logMessages(Behaviors.ignore[Home.ReadyToLeaveHome]),
+          "client"
         )
         home ! Home.LeaveHome("alice", client)
         Behaviors.same

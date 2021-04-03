@@ -10,10 +10,9 @@ object MyActor {
 
   def apply(): Behavior[Message] = {
     Behaviors.logMessages {
-      Behaviors.receiveMessage {
-        case Stop(replyTo) =>
-          replyTo ! Done
-          Behaviors.stopped
+      Behaviors.receiveMessage { case Stop(replyTo) =>
+        replyTo ! Done
+        Behaviors.stopped
       }
     }
   }
