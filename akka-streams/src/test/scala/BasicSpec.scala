@@ -1,56 +1,34 @@
-import akka.{Done, NotUsed}
 import akka.actor.{Actor, ActorSystem, Props}
-import akka.testkit.TestKit
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 import akka.stream._
 import akka.stream.scaladsl._
-import org.scalatest.concurrent.ScalaFutures
+import akka.{Done, NotUsed}
 
 import scala.concurrent._
-import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-final class BasicSpec
-    extends TestKit(ActorSystem("test"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll
-    with ScalaFutures {
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-  }
+final class BasicSpec extends BaseSpec(ActorSystem("test")) {
 
   "example of toMat" in {
     val source = Source(1 to 10)
     val sink = Sink.fold[Int, Int](0)(_ + _)
     val runnable = source.toMat(sink)(Keep.right)
-    val sumFuture = runnable.run()
-    val sum = Await.result(sumFuture, 3.seconds)
-    sum should be(55)
+    runnable.run().futureValue shouldBe 55
   }
 
   "example of runWith" in {
     val source = Source(1 to 10)
     val sink = Sink.fold[Int, Int](0)(_ + _)
-    val sumFuture = source.runWith(sink)
-    val sum = Await.result(sumFuture, 3.seconds)
-    sum should be(55)
+    source.runWith(sink).futureValue shouldBe 55
   }
 
   "example of immutability of operators" in {
     val source = Source(1 to 10)
 
     source.map(_ => 0) // has no effect on source, since it's immutable
-    val sumFuture = source.runWith(Sink.fold(0)(_ + _))
-    val sum = Await.result(sumFuture, 3.seconds)
-    sum should be(55)
+    source.runWith(Sink.fold(0)(_ + _)).futureValue shouldBe 55
 
     val zeros = source.map(_ => 0)
-    val zeroSumFuture = zeros.runWith(Sink.fold(0)(_ + _))
-    val zeroSum = Await.result(zeroSumFuture, 3.seconds)
-    zeroSum should be(0)
+    zeros.runWith(Sink.fold(0)(_ + _)).futureValue shouldBe 0
   }
 
   "example of multiple times materialization" in {
@@ -59,10 +37,8 @@ final class BasicSpec
     val sumFuture1 = runnable.run()
     val sumFuture2 = runnable.run()
 
-    sumFuture1 should not be (sumFuture2)
-    val sum1 = Await.result(sumFuture1, 3.seconds)
-    val sum2 = Await.result(sumFuture2, 3.seconds)
-    sum1 should be(sum2)
+    sumFuture1 should not be sumFuture2
+    sumFuture1.futureValue shouldBe sumFuture2.futureValue
   }
 
   "example of various source constructors" in {
@@ -123,24 +99,15 @@ final class BasicSpec
   }
 
   "example of illegal stream elements" in {
-    import system.dispatcher
-
     val illegalSource = Source(List("abc", null, "def"))
     val failureFuture =
       illegalSource.toMat(Sink.fold("")(_ + _))(Keep.right).run()
-    failureFuture.onComplete {
-      case Success(value)     => // Do nothing
-      case Failure(exception) => println(exception)
-    }
-    the[NullPointerException] thrownBy {
-      Await.result(failureFuture, 3.seconds)
-    }
+    failureFuture.failed.futureValue shouldBe a[NullPointerException]
 
     val legalSource = Source(List("abc", null, "def").map(Option(_)))
     val future =
       legalSource.toMat(Sink.fold("")(_ + _.getOrElse("")))(Keep.right).run()
-    val result = Await.result(future, Duration.Inf)
-    result should be("abcdef")
+    future.futureValue shouldBe "abcdef"
   }
 
   "example of source pre-materialization" in {
@@ -156,13 +123,12 @@ final class BasicSpec
     queue.offer("Hello!")
     queue.offer("World!")
     queue.complete()
-    val result = Await.result(resultFuture, 3.seconds)
-    result should be("Hello!")
+    resultFuture.futureValue shouldBe "Hello!"
   }
 
   "example of actor materializer lifecycle" in {
     final class RunWithMyself(promise: Promise[Done]) extends Actor {
-      implicit val mat = Materializer(context)
+      implicit val mat: Materializer = Materializer(context)
 
       Source.maybe.runWith(Sink.onComplete({
         case Success(done) =>
@@ -183,9 +149,9 @@ final class BasicSpec
     watch(actor)
     actor ! "boom"
     expectTerminated(actor)
-    the[AbruptStageTerminationException] thrownBy {
-      Await.result(promise.future, 3.seconds)
-    }
+    promise.future.failed.futureValue shouldBe a[
+      AbruptStageTerminationException
+    ]
   }
 
   "example of explicit materializer lifecycle" in {
@@ -205,7 +171,7 @@ final class BasicSpec
       }
     }
 
-    implicit val materializer = Materializer(system)
+    implicit val materializer: Materializer = Materializer(system)
     val promise = Promise[Done]()
     val actor = system.actorOf(Props(new RunWithMyself(promise)))
 
@@ -216,8 +182,9 @@ final class BasicSpec
     promise.isCompleted shouldBe false
     materializer.shutdown()
     awaitCond(materializer.isShutdown)
-    the[AbruptStageTerminationException] thrownBy {
-      Await.result(promise.future, 3.seconds)
-    }
+    promise.future.failed.futureValue shouldBe a[
+      AbruptStageTerminationException
+    ]
   }
+
 }

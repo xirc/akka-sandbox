@@ -3,42 +3,29 @@ import akka.pattern.pipe
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.stream.testkit.scaladsl.{TestSink, TestSource}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestProbe}
 import akka.{Done, pattern}
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent._
 import scala.concurrent.duration._
 
 final class TestkitSpec
-    extends TestKit(ActorSystem("testkit"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll
-    with ScalaFutures
+    extends BaseSpec(ActorSystem("testkit"))
     with ImplicitSender {
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-  }
 
   "example of a test for a sink" in {
     val sinkUnderTest =
       Flow[Int].map(_ * 2).toMat(Sink.fold(0)(_ + _))(Keep.right)
 
     val future = Source(1 to 4).runWith(sinkUnderTest)
-    val result = Await.result(future, 3.seconds)
-    result should be(20)
+    future.futureValue shouldBe 20
   }
 
   "example of a test for a source" in {
     val sourceUnderTest = Source.repeat(1).map(_ * 2)
 
     val future = sourceUnderTest.take(10).runWith(Sink.seq)
-    val result = Await.result(future, 3.seconds)
-    result shouldBe Seq.fill(10)(2)
+    future.futureValue shouldBe Seq.fill(10)(2)
   }
 
   "example of a test for a flow" in {
@@ -47,8 +34,7 @@ final class TestkitSpec
     val future = Source(1 to 10)
       .via(flowUnderTest)
       .runWith(Sink.fold(Seq.empty[Int])(_ :+ _))
-    val result = Await.result(future, 3.seconds)
-    result shouldBe (1 to 4)
+    future.futureValue shouldBe (1 to 4)
   }
 
   "example of using pipeTo" in {
@@ -93,8 +79,7 @@ final class TestkitSpec
     ref ! 3
     ref ! Done
 
-    val result = Await.result(future, 3.seconds)
-    result should be("123")
+    future.futureValue shouldBe "123"
   }
 
   "example of using TestSink.probe" in {
@@ -122,9 +107,7 @@ final class TestkitSpec
       TestSource.probe[Int].toMat(sinkUnderTest)(Keep.both).run()
     probe.sendError(new Exception("boom"))
 
-    Await.ready(future, 3.seconds)
-    val exception = future.failed.futureValue
-    exception.getMessage shouldBe "boom"
+    future.failed.futureValue.getMessage shouldBe "boom"
   }
 
   "example of using TestSource and TestSink for testing flows" in {

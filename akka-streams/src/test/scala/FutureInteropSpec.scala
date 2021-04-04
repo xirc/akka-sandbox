@@ -1,18 +1,13 @@
-import java.util.concurrent.atomic.AtomicInteger
-
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.testkit.TestKit
 import akka.stream._
 import akka.stream.scaladsl._
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
+import java.util.concurrent.atomic.AtomicInteger
+import scala.collection.immutable
 import scala.concurrent._
 import scala.concurrent.duration._
-import scala.collection.immutable
 
 object FutureInteropSpec {
   def config: Config =
@@ -27,10 +22,8 @@ object FutureInteropSpec {
         |""".stripMargin)
 }
 final class FutureInteropSpec
-    extends TestKit(ActorSystem("actor-system", FutureInteropSpec.config))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
+    extends BaseSpec(ActorSystem("actor-system", FutureInteropSpec.config)) {
+
   "example of mapAsync" in {
     case class Tweet(author: Author, hashtags: Set[String])
     case class Author(handle: String)

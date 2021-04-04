@@ -1,26 +1,15 @@
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.testkit.TestKit
 import akka.stream._
 import akka.stream.scaladsl.Tcp.OutgoingConnection
 import akka.stream.scaladsl._
 import akka.util.ByteString
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.annotation.nowarn
 import scala.concurrent._
-import scala.concurrent.duration._
 
 final class StreamCompositionSpec
-    extends TestKit(ActorSystem("stream-composition-spec"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-  }
+    extends BaseSpec(ActorSystem("stream-composition-spec")) {
 
   "example of nested composition" in {
     val trivialRunnableGraph: RunnableGraph[Future[Int]] =
@@ -53,10 +42,8 @@ final class StreamCompositionSpec
 
     val trivialResultFuture = trivialRunnableGraph.run()
     val resultFuture = runnableGraph.run()
-    val trivialResult = Await.result(trivialResultFuture, 3.seconds)
-    val result = Await.result(resultFuture, 3.seconds)
-    trivialResult should be(-1)
-    result should be(trivialResult)
+    trivialResultFuture.futureValue shouldBe -1
+    resultFuture.futureValue shouldBe -1
   }
 
   "example of a complex runnable graph" in {
