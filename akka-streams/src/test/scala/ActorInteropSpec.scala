@@ -1,25 +1,15 @@
-import akka.{Done, NotUsed}
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.pattern.AskTimeoutException
-import akka.testkit.{TestActors, TestKit, TestProbe}
-import akka.util.Timeout
 import akka.stream._
 import akka.stream.scaladsl._
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
+import akka.testkit.{TestActors, TestProbe}
+import akka.{Done, NotUsed}
 
-import scala.concurrent._
 import scala.concurrent.duration._
 
-final class ActorInteropSpec
-    extends TestKit(ActorSystem("actor-system"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
-  "example of ask" in {
-    implicit val askTimeout = Timeout(1.seconds)
+final class ActorInteropSpec extends BaseSpec(ActorSystem("actor-system")) {
 
+  "example of ask" in {
     val words: Source[String, NotUsed] =
       Source(List("hello", "hi"))
 
@@ -31,9 +21,7 @@ final class ActorInteropSpec
         .ask[String](parallelism = 5)(echoActorRef)
         .map(_.toUpperCase)
         .runWith(Sink.seq)
-
-    val result = Await.result(resultFuture, 3.seconds)
-    result shouldBe Seq("HELLO", "HI")
+    resultFuture.futureValue shouldBe Seq("HELLO", "HI")
 
     watch(echoActorRef)
     system.stop(echoActorRef)
@@ -44,10 +32,7 @@ final class ActorInteropSpec
         .ask[String](parallelism = 5)(echoActorRef)
         .map(_.toUpperCase)
         .runWith(Sink.seq)
-
-    the[AskTimeoutException] thrownBy {
-      Await.result(failureFuture, 3.seconds)
-    }
+    failureFuture.failed.futureValue shouldBe a[AskTimeoutException]
   }
 
   "example of sink.actorRefWithBackpressure" in {
@@ -125,7 +110,7 @@ final class ActorInteropSpec
         }
       })
       .runWith(Sink.ignore)
-    Await.result(future, 5.seconds)
+    future.futureValue shouldBe Done
   }
 
   "example of Source.actorRef" in {
@@ -147,6 +132,8 @@ final class ActorInteropSpec
     ref ! 2
     ref ! 3
     ref ! akka.actor.Status.Success("Done")
-    Thread.sleep(1.seconds.toMillis)
+    watch(ref)
+    expectTerminated(ref)
   }
+
 }

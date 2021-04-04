@@ -1,23 +1,12 @@
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.testkit.TestKit
 import akka.stream._
 import akka.stream.scaladsl._
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent._
 import scala.concurrent.duration._
 
-final class DynamicStreamHandlingSpec
-    extends TestKit(ActorSystem())
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-  }
+final class DynamicStreamHandlingSpec extends BaseSpec(ActorSystem()) {
 
   val countingSource =
     Source

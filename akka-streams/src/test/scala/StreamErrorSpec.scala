@@ -1,24 +1,15 @@
+import akka.Done
 import akka.actor.ActorSystem
 import akka.stream.scaladsl._
-import akka.testkit.TestKit
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
-import scala.concurrent._
-import scala.concurrent.duration._
+final class StreamErrorSpec extends BaseSpec(ActorSystem("stream-error-spec")) {
 
-final class StreamErrorSpec
-    extends TestKit(ActorSystem("stream-error-spec"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
   "example of logging error" in {
     val future = Source(-5 to 5)
       .map(1 / _)
       .log("error logging")
       .runWith(Sink.ignore)
-    Await.ready(future, 1.seconds)
+    future.failed.futureValue shouldBe a[ArithmeticException]
   }
 
   "example of recover" in {
@@ -32,8 +23,7 @@ final class StreamErrorSpec
         e.getMessage
       }
       .runForeach(println)
-    Await.ready(future, 1.seconds)
-    future.value.get.isSuccess shouldBe true
+    future.futureValue shouldBe Done
   }
 
   "example of recoverWithRetries" in {
@@ -50,7 +40,7 @@ final class StreamErrorSpec
         }
       )
       .runForeach(println)
-    Await.ready(future, 1.seconds)
-    future.value.get.isSuccess shouldBe true
+    future.futureValue shouldBe Done
   }
+
 }

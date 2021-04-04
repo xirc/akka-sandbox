@@ -1,26 +1,16 @@
+import akka.Done
 import akka.actor.ActorSystem
-import akka.testkit.TestKit
 import akka.stream._
 import akka.stream.scaladsl._
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.math._
 
-final class BufferSpec
-    extends TestKit(ActorSystem("buffer-spec"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-  }
+final class BufferSpec extends BaseSpec(ActorSystem("buffer-spec")) {
 
   "example of the async operator" in {
-    Source(1 to 3)
+    val future = Source(1 to 3)
       .map { i =>
         println(s"A: $i"); i
       }
@@ -34,6 +24,7 @@ final class BufferSpec
       }
       .async
       .runWith(Sink.ignore)
+    future.futureValue shouldBe Done
   }
 
   "example of internal buffers" in {
@@ -41,19 +32,17 @@ final class BufferSpec
       Flow[Int].map(_ * 2).async.addAttributes(Attributes.inputBuffer(1, 1))
     println("using flow1")
     val future1 = Source(1 to 10).via(flow1).runForeach(println)
-    Await.ready(future1, 3.seconds)
+    future1.futureValue shouldBe Done
 
     println("using flow1 and flow2")
     val flow2 = flow1.via(Flow[Int].map(_ / 2)).async
     val runnableGraph2 =
       Source(1 to 10).via(flow2).toMat(Sink.foreach(println))(Keep.right)
-    val future2 = runnableGraph2.run()
-    Await.ready(future2, 3.seconds)
+    runnableGraph2.run().futureValue shouldBe Done
 
     val withOverriddenDefaults =
       runnableGraph2.withAttributes(Attributes.inputBuffer(64, 64))
-    val future3 = withOverriddenDefaults.run()
-    Await.ready(future3, 3.seconds)
+    withOverriddenDefaults.run().futureValue shouldBe Done
   }
 
   "example of issues caused by internal buffers" in {
