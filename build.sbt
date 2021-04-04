@@ -53,6 +53,13 @@ lazy val akkaClassicFSM = (project in file("akka-classic/fsm")).settings(
   )
 )
 
+lazy val akkaClassicRouter = (project in file("akka-classic/router")).settings(
+  name := "akka-classic-router",
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-actor" % AkkaVersion
+  )
+)
+
 lazy val akkaSerialization =
   (project in file("akka-serialization")).settings(
     name := "akka-serialization",

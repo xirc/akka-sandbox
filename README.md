@@ -9,6 +9,8 @@ This repository contains sample codes written by myself to practice.
 ## Akka Classic
 ### FSM
 - [Classic FSM • Akka Documentation](https://doc.akka.io/docs/akka/current/fsm.html)
+### Router
+- [Classic Routing • Akka Documentation](https://doc.akka.io/docs/akka/current/routing.html)
 
 ## Akka HTTP
 
