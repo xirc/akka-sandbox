@@ -41,15 +41,13 @@ class MySepc
     "expectMsgAllOf" in {
       echo ! "hello"
       echo ! "world"
-      val all = expectMsgAllOf("hello", "world")
-      all must contain(allOf("hello", "world"))
+      expectMsgAllOf("hello", "world")
     }
 
     "expectMsgAllOf2" in {
       echo ! Some(1)
       echo ! None
-      val all = expectMsgAllOf(None, Some(1))
-      all must contain(allOf(None, Some(1)))
+      expectMsgAllOf(None, Some(1))
     }
 
     "expectMsgType" in {
