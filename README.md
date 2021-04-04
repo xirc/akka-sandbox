@@ -7,6 +7,8 @@ This repository contains sample codes written by myself to practice.
 - [Actors • Akka Documentation](https://doc.akka.io/docs/akka/current/typed/index.html)
 
 ## Akka Classic
+### Actor
+- [Testing Classic Actors • Akka Documentation](https://doc.akka.io/docs/akka/current/testing.html)
 ### FSM
 - [Classic FSM • Akka Documentation](https://doc.akka.io/docs/akka/current/fsm.html)
 ### Router
