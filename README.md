@@ -13,6 +13,12 @@ This repository contains sample codes written by myself to practice.
 - [Classic FSM • Akka Documentation](https://doc.akka.io/docs/akka/current/fsm.html)
 ### Router
 - [Classic Routing • Akka Documentation](https://doc.akka.io/docs/akka/current/routing.html)
+### Cluster
+- [Classic Clustering • Akka Documentation](https://doc.akka.io/docs/akka/current/index-cluster.html)
+- [Classic Cluster Singleton • Akka Documentation](https://doc.akka.io/docs/akka/current/cluster-singleton.html)
+- [Classic Distributed Publish Subscribe in Cluster • Akka Documentation](https://doc.akka.io/docs/akka/current/distributed-pub-sub.html)
+- [Classic Cluster Sharding • Akka Documentation](https://doc.akka.io/docs/akka/current/cluster-sharding.html)
+
 
 ## Akka HTTP
 
