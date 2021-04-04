@@ -6,6 +6,10 @@ This repository contains sample codes written by myself to practice.
 
 - [Actors • Akka Documentation](https://doc.akka.io/docs/akka/current/typed/index.html)
 
+## [Akka HTTP](/akka-http)
+
+- [Akka HTTP](https://doc.akka.io/docs/akka-http/current/index.html)
+
 ## [Akka Serialization](/akka-serialization)
 
 - [Classic Serialization • Akka Documentation](https://doc.akka.io/docs/akka/current/serialization-classic.html)
