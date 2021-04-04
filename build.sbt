@@ -44,6 +44,15 @@ lazy val akka = (project in file("akka")).settings(
   )
 )
 
+lazy val akkaClassicActor = (project in file("akka-classic/actor")).settings(
+  name := "akka-classic-actor",
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-actor" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
+    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
+  )
+)
+
 lazy val akkaClassicFSM = (project in file("akka-classic/fsm")).settings(
   name := "akka-classic-fsm",
   libraryDependencies ++= Seq(
