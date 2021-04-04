@@ -7,6 +7,10 @@ This repository contains sample codes written by myself to practice.
 - [Actors • Akka Documentation](https://doc.akka.io/docs/akka/current/typed/index.html)
 
 ## [Akka HTTP](/akka-http)
+## Akka Classic
+### FSM
+- [Classic FSM • Akka Documentation](https://doc.akka.io/docs/akka/current/fsm.html)
+
 
 - [Akka HTTP](https://doc.akka.io/docs/akka-http/current/index.html)
 
