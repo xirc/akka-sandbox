@@ -91,7 +91,7 @@ final class TestkitSpec
     ref ! 1
     ref ! 2
     ref ! 3
-    ref ! akka.actor.Status.Success(CompletionStrategy.draining)
+    ref ! Done
 
     val result = Await.result(future, 3.seconds)
     result should be("123")

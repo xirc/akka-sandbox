@@ -72,7 +72,7 @@ final class BasicSpec
 
     val futureSource: Source[String, NotUsed] =
       Source.future(Future.successful("Hello Streams!"))
-    futureSource.runReduce(_ + _).futureValue shouldBe "Hello Stream!"
+    futureSource.runReduce(_ + _).futureValue shouldBe "Hello Streams!"
 
     val singleSource: Source[String, NotUsed] =
       Source.single("only one element")
@@ -80,7 +80,7 @@ final class BasicSpec
 
     val emptySource: Source[Int, NotUsed] =
       Source.empty[Int]
-    emptySource.runReduce(_ + _).futureValue shouldBe 0
+    emptySource.runFold(0)(_ + _).futureValue shouldBe 0
 
   }
 
