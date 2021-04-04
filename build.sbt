@@ -53,6 +53,61 @@ lazy val akkaClassicActor = (project in file("akka-classic/actor")).settings(
   )
 )
 
+lazy val akkaClassicClusterSimple =
+  (project in file("akka-classic/cluster-simple")).settings(
+    name := "akka-classic-cluster-simple",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
+    )
+  )
+
+lazy val akkaClassicClusterComplex =
+  (project in file("akka-classic/cluster-complex")).settings(
+    name := "akka-classic-cluster-complex",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
+      "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
+      "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
+      "com.typesafe.akka" %% "akka-multi-node-testkit" % AkkaVersion % Test
+    )
+  )
+
+lazy val akkaClassicClusterSingleton =
+  (project in file("akka-classic/cluster-singleton")).settings(
+    name := "akka-classic-cluster-singleton",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
+      "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
+    )
+  )
+
+lazy val akkaClassicClusterPubSub =
+  (project in file("akka-classic/cluster-pubsub")).settings(
+    name := "akka-classic-cluster-pubsub",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
+      "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
+    )
+  )
+
+lazy val akkaClassicClusterPubSub2PP =
+  (project in file("akka-classic/cluster-pubsub-p2p")).settings(
+    name := "akka-classic-cluster-pubsub-p2p",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
+      "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
+    )
+  )
+
+lazy val akkaClassicClusterSharding =
+  (project in file("akka-classic/cluster-sharding")).settings(
+    name := "akka-classic-cluster-sharding",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
+      "com.typesafe.akka" %% "akka-cluster-sharding" % AkkaVersion
+    )
+  )
+
 lazy val akkaClassicFSM = (project in file("akka-classic/fsm")).settings(
   name := "akka-classic-fsm",
   libraryDependencies ++= Seq(
