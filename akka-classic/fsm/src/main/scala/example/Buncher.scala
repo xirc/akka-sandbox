@@ -25,7 +25,7 @@ final class Buncher extends FSM[State, Data] {
   startWith(Idle, Uninitialized)
 
   when(Idle) { case Event(SetTarget(ref), Uninitialized) =>
-    stay.using(Todo(ref, Vector.empty))
+    stay().using(Todo(ref, Vector.empty))
   }
 
   onTransition { case Active -> Idle =>
@@ -52,7 +52,7 @@ final class Buncher extends FSM[State, Data] {
         stateName,
         s
       )
-      stay
+      stay()
   }
 
   initialize()

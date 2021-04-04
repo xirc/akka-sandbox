@@ -1,4 +1,4 @@
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.pattern.AskTimeoutException
 import akka.testkit.{TestActors, TestKit, TestProbe}
@@ -125,12 +125,17 @@ final class ActorInteropSpec
         }
       })
       .runWith(Sink.ignore)
-    Thread.sleep(5.seconds.toMillis)
+    Await.result(future, 5.seconds)
   }
 
   "example of Source.actorRef" in {
+    val cm: PartialFunction[Any, CompletionStrategy] = { case Done =>
+      CompletionStrategy.immediately
+    }
     val ref = Source
       .actorRef[Int](
+        cm,
+        PartialFunction.empty,
         10,
         OverflowStrategy.fail
       ) // backpressure is not supported.

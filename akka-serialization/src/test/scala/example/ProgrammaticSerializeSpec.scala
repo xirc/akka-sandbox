@@ -1,7 +1,7 @@
 package example
 
 import akka.actor.ActorSystem
-import akka.serialization.{Serialization, SerializationExtension, Serializers}
+import akka.serialization.{SerializationExtension, Serializers}
 import akka.testkit.{ImplicitSender, TestKit}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers

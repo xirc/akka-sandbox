@@ -1,12 +1,11 @@
-name := "akka-sandbox"
-version := "0.1"
-scalaVersion := "2.13.3"
-scalacOptions ++= Seq(
+ThisBuild / version := "0.1"
+ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
   "-Xlint",
-  "-Xfatal-warnings"
+  "-Werror"
 )
 
 addCommandAlias(
@@ -50,12 +49,13 @@ lazy val akkaClassicFSM = (project in file("akka-classic/fsm")).settings(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-actor" % AkkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
-    "org.scalatest" %% "scalatest" % ScalaTestVersion % "test"
+    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
 
-lazy val `akka-serialization` =
+lazy val akkaSerialization =
   (project in file("akka-serialization")).settings(
+    name := "akka-serialization",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-actor" % AkkaVersion,
       "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
@@ -65,7 +65,8 @@ lazy val `akka-serialization` =
     )
   )
 
-lazy val `akka-streams` = (project in file("akka-streams")).settings(
+lazy val akkaStreams = (project in file("akka-streams")).settings(
+  name := "akka-streams",
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,

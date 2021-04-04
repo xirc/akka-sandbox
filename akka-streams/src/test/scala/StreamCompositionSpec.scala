@@ -9,6 +9,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
+import scala.annotation.nowarn
 import scala.concurrent._
 import scala.concurrent.duration._
 
@@ -127,6 +128,7 @@ final class StreamCompositionSpec
 
   "example of composition of a closed graph in another one" in {
     val closed1 = Source.single(0).to(Sink.foreach(println))
+    @nowarn
     val closed2 =
       RunnableGraph.fromGraph(GraphDSL.create() { implicit builder =>
         import GraphDSL.Implicits._

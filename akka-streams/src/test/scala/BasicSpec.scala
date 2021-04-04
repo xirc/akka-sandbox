@@ -6,6 +6,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import akka.stream._
 import akka.stream.scaladsl._
+import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -15,7 +16,8 @@ final class BasicSpec
     extends TestKit(ActorSystem("test"))
     with AnyWordSpecLike
     with Matchers
-    with BeforeAndAfterAll {
+    with BeforeAndAfterAll
+    with ScalaFutures {
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
   }
@@ -66,29 +68,39 @@ final class BasicSpec
   "example of various source constructors" in {
     val listSource: Source[Int, NotUsed] =
       Source(List(1, 2, 3))
+    listSource.runReduce(_ + _).futureValue shouldBe 6
 
     val futureSource: Source[String, NotUsed] =
       Source.future(Future.successful("Hello Streams!"))
+    futureSource.runReduce(_ + _).futureValue shouldBe "Hello Streams!"
 
     val singleSource: Source[String, NotUsed] =
       Source.single("only one element")
+    singleSource.runReduce(_ + _).futureValue shouldBe "only one element"
 
     val emptySource: Source[Int, NotUsed] =
       Source.empty[Int]
+    emptySource.runFold(0)(_ + _).futureValue shouldBe 0
+
   }
 
   "example of various sink constructors" in {
     val foldSink: Sink[Int, Future[Int]] =
       Sink.fold[Int, Int](0)(_ + _)
+    Source(Seq(1, 2, 3)).runWith(foldSink).futureValue shouldBe 6
 
     val headSink: Sink[Int, Future[Int]] =
       Sink.head[Int]
+    Source(Seq(1, 2, 3)).runWith(headSink).futureValue shouldBe 1
 
     val ignoreSink: Sink[Any, Future[Done]] =
       Sink.ignore
+    Source(Seq("1", "2", "3")).runWith(ignoreSink).futureValue shouldBe Done
 
     val foreachSink: Sink[String, Future[Done]] =
       Sink.foreach[String](println)
+    Source(Seq("1", "2", "3")).runWith(foreachSink).futureValue shouldBe Done
+
   }
 
   "example of various ways to wire up parts of streams" in {

@@ -1,23 +1,24 @@
-import akka.actor.ActorSystem
-import akka.pattern
+import akka.actor.{ActorSystem, Status}
 import akka.pattern.pipe
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.stream.testkit.scaladsl.{TestSink, TestSource}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.{Done, pattern}
 import org.scalatest.BeforeAndAfterAll
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent._
 import scala.concurrent.duration._
-import scala.util.Failure
 
 final class TestkitSpec
     extends TestKit(ActorSystem("testkit"))
     with AnyWordSpecLike
     with Matchers
     with BeforeAndAfterAll
+    with ScalaFutures
     with ImplicitSender {
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
@@ -65,7 +66,9 @@ final class TestkitSpec
     case object Completed
     val probe = TestProbe()
     val cancellable =
-      sourceUnderTest.to(Sink.actorRef(probe.ref, Completed)).run()
+      sourceUnderTest
+        .to(Sink.actorRef(probe.ref, Completed, e => Status.Failure(e)))
+        .run()
 
     probe.expectMsg(1.second, Tick)
     probe.expectNoMessage(100.millis)
@@ -77,15 +80,18 @@ final class TestkitSpec
   "example of using Source.actorRef" in {
     val sinkUnderTest =
       Flow[Int].map(_.toString).toMat(Sink.fold("")(_ + _))(Keep.right)
+    val cm: PartialFunction[Any, CompletionStrategy] = { case Done =>
+      CompletionStrategy.immediately
+    }
     val (ref, future) = Source
-      .actorRef(8, OverflowStrategy.fail)
+      .actorRef(cm, PartialFunction.empty, 8, OverflowStrategy.fail)
       .toMat(sinkUnderTest)(Keep.both)
       .run()
 
     ref ! 1
     ref ! 2
     ref ! 3
-    ref ! akka.actor.Status.Success(CompletionStrategy.draining)
+    ref ! Done
 
     val result = Await.result(future, 3.seconds)
     result should be("123")
@@ -117,7 +123,7 @@ final class TestkitSpec
     probe.sendError(new Exception("boom"))
 
     Await.ready(future, 3.seconds)
-    val Failure(exception) = future.value.get
+    val exception = future.failed.futureValue
     exception.getMessage shouldBe "boom"
   }
 

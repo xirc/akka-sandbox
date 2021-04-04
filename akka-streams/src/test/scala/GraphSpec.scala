@@ -1,16 +1,16 @@
-import java.nio.ByteOrder
-
 import akka.NotUsed
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Status}
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.stream.stage.{GraphStageLogic, InHandler, OutHandler}
-import akka.testkit.{TestActors, TestKit}
+import akka.testkit.TestKit
 import akka.util.ByteString
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
+import java.nio.ByteOrder
+import scala.annotation.nowarn
 import scala.collection.immutable
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -180,7 +180,7 @@ final class GraphSpec
 
   "example of combining sinks" in {
     val actorRef = testActor
-    val sendRemotely = Sink.actorRef(actorRef, "Done")
+    val sendRemotely = Sink.actorRef(actorRef, "Done", e => Status.Failure(e))
     val localProcessing = Sink.foreach(println)
     val sink = Sink.combine(sendRemotely, localProcessing)(Broadcast[Int](_))
 
@@ -208,6 +208,7 @@ final class GraphSpec
     }
 
     import FanInShape.{Init, Name}
+    @nowarn
     class PriorityWorkerPoolShape2[In, Out](
         _init: Init[Out] = Name("PriorityWorkerPool")
     ) extends FanInShape[Out](_init) {
@@ -296,6 +297,7 @@ final class GraphSpec
       }
     }
 
+    @nowarn
     val codecVerbose =
       BidiFlow.fromGraph(GraphDSL.create() { implicit builder =>
         val outbound = builder.add(Flow[Message].map(toBytes))
