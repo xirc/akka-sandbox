@@ -33,7 +33,7 @@ final class BuncherSpec
   "not bach if uninitialized" in {
     val buncher = system.actorOf(Props(new Buncher))
     buncher ! Queue(60)
-    expectNoMessage
+    expectNoMessage()
   }
 
 }

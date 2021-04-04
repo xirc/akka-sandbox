@@ -1,12 +1,11 @@
-name := "akka-sandbox"
-version := "0.1"
-scalaVersion := "2.13.3"
-scalacOptions ++= Seq(
+ThisBuild / version := "0.1"
+ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
   "-Xlint",
-  "-Xfatal-warnings"
+  "-Werror"
 )
 
 addCommandAlias(

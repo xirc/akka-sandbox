@@ -1,5 +1,4 @@
 import akka.actor.ActorSystem
-import akka.stream._
 import akka.stream.scaladsl._
 import akka.testkit.TestKit
 import org.scalatest.BeforeAndAfterAll

@@ -1,7 +1,5 @@
 package example
 
-import akka.actor.{Actor, Props}
-
 object Messages {
   final object JavaMessage
   final object JsonMessage extends JsonSerializable

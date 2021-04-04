@@ -180,7 +180,7 @@ final class DynamicStreamHandlingSpec
     val runnableGraph =
       producer.toMat(
         PartitionHub.statefulSink(
-          roundRobin,
+          roundRobin _,
           startAfterNrOfConsumers = 2,
           bufferSize = 256
         )
@@ -207,7 +207,7 @@ final class DynamicStreamHandlingSpec
     val runnableGraph =
       producer.toMat(
         PartitionHub.statefulSink(
-          balanced,
+          balanced[Int] _,
           startAfterNrOfConsumers = 2,
           bufferSize = 15
         )
