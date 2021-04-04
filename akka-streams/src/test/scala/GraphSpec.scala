@@ -3,26 +3,14 @@ import akka.actor.{ActorSystem, Status}
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.stream.stage.{GraphStageLogic, InHandler, OutHandler}
-import akka.testkit.TestKit
 import akka.util.ByteString
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
 
 import java.nio.ByteOrder
 import scala.annotation.nowarn
 import scala.collection.immutable
 import scala.concurrent._
-import scala.concurrent.duration._
 
-final class GraphSpec
-    extends TestKit(ActorSystem("graph-spec"))
-    with AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll {
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-  }
+final class GraphSpec extends BaseSpec(ActorSystem("graph-spec")) {
 
   "example of a simple GraphDSL" in {
     val g = RunnableGraph.fromGraph(GraphDSL.create() { implicit builder =>
@@ -63,10 +51,8 @@ final class GraphSpec
     )
 
     val (trf, brf) = g.run()
-    val topResult = Await.result(trf, 3.seconds)
-    val bottomResult = Await.result(brf, 3.seconds)
-    topResult shouldBe 2
-    bottomResult shouldBe 2
+    trf.futureValue shouldBe 2
+    brf.futureValue shouldBe 2
   }
 
   "example of many stream in a graph" in {
@@ -92,8 +78,7 @@ final class GraphSpec
     import system.dispatcher
     val futureList: Seq[Future[String]] = g.run()
     val listFuture: Future[Seq[String]] = Future.traverse(futureList)(identity)
-    val list = Await.result(listFuture, 3.seconds)
-    list should be(Seq("ax", "bx", "cx"))
+    listFuture.futureValue should be(Seq("ax", "bx", "cx"))
   }
 
   "example of a partial graph (flow)" in {
@@ -125,9 +110,7 @@ final class GraphSpec
         ClosedShape
     })
 
-    val maxFuture: Future[Int] = g.run()
-    val result = Await.result(maxFuture, 3.seconds)
-    result should be(3)
+    g.run().futureValue shouldBe 3
   }
 
   "example of constructing a source from a partial graph" in {
@@ -144,8 +127,7 @@ final class GraphSpec
     })
 
     val firstPairFuture: Future[(Int, Int)] = pairs.runWith(Sink.head)
-    val firstPair = Await.result(firstPairFuture, 3.seconds)
-    firstPair should be((1, 2))
+    firstPairFuture.futureValue should be((1, 2))
   }
 
   "example of constructing a flow from a partial graph" in {
@@ -164,8 +146,7 @@ final class GraphSpec
 
     val (_, headFuture) =
       pairUpWithString.runWith(Source(List(1, 2)), Sink.head)
-    val head = Await.result(headFuture, 3.seconds)
-    head should be((1, "1"))
+    headFuture.futureValue should be((1, "1"))
   }
 
   "example of combining sources" in {
@@ -174,8 +155,7 @@ final class GraphSpec
     val merged = Source.combine(source1, source2)(Merge(_))
 
     val resultFuture = merged.runWith(Sink.fold(0)(_ + _))
-    val result = Await.result(resultFuture, 3.seconds)
-    result should be(3)
+    resultFuture.futureValue shouldBe 3
   }
 
   "example of combining sinks" in {
@@ -387,8 +367,7 @@ final class GraphSpec
     val flow = stack.atop(stack.reversed).join(pingpong)
     val resultFuture =
       Source((0 to 9).map(Ping)).via(flow).limit(20).runWith(Sink.seq)
-    val result = Await.result(resultFuture, 3.seconds)
-    result should be((0 to 9).map(Pong))
+    resultFuture.futureValue shouldBe Vector.tabulate(10)(Pong)
   }
 
   "example of accessing the materialized value inside the graph" in {
@@ -400,8 +379,7 @@ final class GraphSpec
           FlowShape(fold.in, flow.outlet)
       })
     val resultFuture = Source(List(1, 2, 3)).via(foldFlow).runWith(Sink.seq)
-    val result = Await.result(resultFuture, 3.seconds)
-    result should be(Seq(6))
+    resultFuture.futureValue shouldBe Seq(6)
   }
 
 }
