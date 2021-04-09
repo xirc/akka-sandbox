@@ -44,6 +44,19 @@ lazy val akka = (project in file("akka")).settings(
   )
 )
 
+lazy val akkaPersistence = (project in file("akka-persistence")).settings(
+  name := "akka-persistence",
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-persistence-typed" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-persistence-testkit" % AkkaVersion % Test,
+    "org.scalactic" %% "scalactic" % ScalaTestVersion % Test,
+    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
+    "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
+    "ch.qos.logback" % "logback-classic" % LogBackVersion
+  )
+)
+
 lazy val akkaClassicActor = (project in file("akka-classic/actor")).settings(
   name := "akka-classic-actor",
   libraryDependencies ++= Seq(
