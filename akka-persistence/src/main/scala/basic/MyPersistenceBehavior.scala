@@ -44,8 +44,10 @@ object MyPersistenceBehavior {
     }
   }
 
-  private def commandHandler(state: State,
-                             command: Command): Effect[Event, State] = {
+  private def commandHandler(
+      state: State,
+      command: Command
+  ): Effect[Event, State] = {
     command match {
       case Add(item) =>
         Effect.persist(Added(item))
