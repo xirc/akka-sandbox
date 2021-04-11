@@ -2,6 +2,8 @@ import akka.actor.ActorSystem
 import akka.cluster.Cluster
 import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}
 
+import java.util.Optional
+
 object Main extends App {
   val system = ActorSystem("sharding-system")
   val cluster = Cluster(system)
@@ -24,8 +26,7 @@ object Main extends App {
       typeName = Counter.shardName,
       entityProps = Counter.props,
       settings = ClusterShardingSettings(system).withRole("counter"),
-      extractEntityId = Counter.extractEntityId,
-      extractShardId = Counter.extractShardId
+      messageExtractor = Counter.extractor
     )
   }
 
@@ -33,9 +34,8 @@ object Main extends App {
     system.log.info("Client Role")
     val proxy = ClusterSharding(system).startProxy(
       Counter.shardName,
-      Some("counter"),
-      Counter.extractEntityId,
-      Counter.extractShardId
+      Optional.of("counter"),
+      Counter.extractor
     )
     val id = system.settings.config.getLong("application.client.id")
     val delta = system.settings.config.getInt("application.client.delta")

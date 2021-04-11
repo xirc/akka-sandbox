@@ -32,7 +32,7 @@ object LatencyTailChoppingExample extends App {
 
           def waiting(requestCount: Int): Behavior[Command] = {
             Behaviors.logMessages {
-              Behaviors.receiveMessage {
+              Behaviors.receiveMessagePartial {
                 case WrappedReply(reply: Reply) =>
                   replyTo ! reply
                   Behaviors.stopped

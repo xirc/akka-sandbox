@@ -1,5 +1,6 @@
 import akka.actor.{Actor, ActorLogging, Props, ReceiveTimeout}
 import akka.cluster.sharding.ShardRegion
+import akka.cluster.sharding.ShardRegion.HashCodeMessageExtractor
 
 import scala.concurrent.duration._
 
@@ -22,15 +23,12 @@ object Counter {
 
   // Sharding
   val shardName = "counter-sharding"
-  val extractEntityId: ShardRegion.ExtractEntityId = { case msg: Command =>
-    (msg.id.toString, msg)
-  }
   val numberOfShards = 100
-  // Sharding algorithm described below is not good.
-  // Use ShardRegion.HashCodeMessageExtract in real world.
-  val extractShardId: ShardRegion.ExtractShardId = {
-    case msg: Command                => (msg.id % numberOfShards).toString
-    case ShardRegion.StartEntity(id) => (id.toLong % numberOfShards).toString
+  val extractor = new HashCodeMessageExtractor(100) {
+    override def entityId(message: Any): String = message match {
+      case msg: Command => msg.id.toString
+      case _            => null // unhandled
+    }
   }
 }
 
