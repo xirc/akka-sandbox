@@ -70,7 +70,7 @@ object ReceptionistExample extends App {
         val adapter =
           context.messageAdapter[Receptionist.Listing](ListingResponse)
         context.spawnAnonymous(PingService())
-        Behaviors.receiveMessage {
+        Behaviors.receiveMessagePartial {
           case PingAll =>
             context.system.receptionist !
               Receptionist.Find(PingService.PingServiceKey, adapter)

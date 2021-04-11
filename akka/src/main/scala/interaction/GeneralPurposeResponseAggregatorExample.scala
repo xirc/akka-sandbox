@@ -49,7 +49,7 @@ object GeneralPurposeResponseAggregatorExample extends App {
         def collecting(
             replies: immutable.IndexedSeq[Reply]
         ): Behavior[Command] = {
-          Behaviors.receiveMessage {
+          Behaviors.receiveMessagePartial {
             case WrappedReply(reply: Reply) =>
               val newReplies = replies :+ reply
               if (newReplies.size == expectedReplies) {
@@ -96,7 +96,7 @@ object GeneralPurposeResponseAggregatorExample extends App {
           aggregateReplies = { replies =>
             AggregatedQuote(
               replies
-                .map {
+                .collect {
                   case Hotel1.Quote(hotel, price) => Quote(hotel, price)
                   case Hotel2.Price(hotel, price) => Quote(hotel, price)
                 }
