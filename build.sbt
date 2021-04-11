@@ -31,7 +31,7 @@ addCommandAlias(
 
 val AkkaVersion = "2.6.9"
 val AkkaHttpVersion = "10.1.13"
-val ScalaTestVersion = "3.2.2"
+val ScalaTestVersion = "3.2.7"
 val LogBackVersion = "1.2.3"
 
 lazy val akka = (project in file("akka")).settings(
