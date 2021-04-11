@@ -30,7 +30,7 @@ object WebServerWithStreaming extends App {
       }
     }
 
-  val binding = Http().bindAndHandle(route, "localhost", 8080)
+  val binding = Http().newServerAt("localhost", 8080).bind(route)
   println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
   StdIn.readLine()
   binding

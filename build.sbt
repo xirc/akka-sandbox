@@ -30,7 +30,7 @@ addCommandAlias(
 // ===
 
 val AkkaVersion = "2.6.14"
-val AkkaHttpVersion = "10.1.14"
+val AkkaHttpVersion = "10.2.4"
 val ScalaTestVersion = "3.2.7"
 val LogBackVersion = "1.2.3"
 
