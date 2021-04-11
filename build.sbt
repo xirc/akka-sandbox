@@ -9,7 +9,7 @@ ThisBuild / scalacOptions ++= Seq(
 )
 
 addCommandAlias(
-  name = "ciFormat",
+  "ciFormat",
   Seq(
     "scalafmtSbt",
     "scalafmtAll"
@@ -39,8 +39,8 @@ lazy val akka = (project in file("akka")).settings(
     "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
     "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion,
     "ch.qos.logback" % "logback-classic" % LogBackVersion,
-    "org.scalatest" %% "scalatest-wordspec" % ScalaTestVersion % Test,
-    "org.scalatest" %% "scalatest-shouldmatchers" % ScalaTestVersion % Test
+    "org.scalactic" %% "scalactic" % ScalaTestVersion,
+    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
 
@@ -50,10 +50,10 @@ lazy val akkaPersistence = (project in file("akka-persistence")).settings(
     "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion,
     "com.typesafe.akka" %% "akka-persistence-typed" % AkkaVersion,
     "com.typesafe.akka" %% "akka-persistence-testkit" % AkkaVersion % Test,
-    "org.scalactic" %% "scalactic" % ScalaTestVersion % Test,
-    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
     "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
-    "ch.qos.logback" % "logback-classic" % LogBackVersion
+    "ch.qos.logback" % "logback-classic" % LogBackVersion,
+    "org.scalactic" %% "scalactic" % ScalaTestVersion,
+    "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
 
@@ -62,6 +62,7 @@ lazy val akkaClassicActor = (project in file("akka-classic/actor")).settings(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-actor" % AkkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
+    "org.scalactic" %% "scalactic" % ScalaTestVersion,
     "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
@@ -80,8 +81,9 @@ lazy val akkaClassicClusterComplex =
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
       "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
-      "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
-      "com.typesafe.akka" %% "akka-multi-node-testkit" % AkkaVersion % Test
+      "com.typesafe.akka" %% "akka-multi-node-testkit" % AkkaVersion % Test,
+      "org.scalactic" %% "scalactic" % ScalaTestVersion,
+      "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
     )
   )
 
@@ -126,6 +128,7 @@ lazy val akkaClassicFSM = (project in file("akka-classic/fsm")).settings(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-actor" % AkkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
+    "org.scalactic" %% "scalactic" % ScalaTestVersion,
     "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
@@ -145,6 +148,7 @@ lazy val akkaSerialization =
       "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
       "com.typesafe.akka" %% "akka-cluster" % AkkaVersion,
       "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
+      "org.scalactic" %% "scalactic" % ScalaTestVersion,
       "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
     )
   )
@@ -155,6 +159,7 @@ lazy val akkaStreams = (project in file("akka-streams")).settings(
     "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test,
     "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion % Test,
+    "org.scalactic" %% "scalactic" % ScalaTestVersion,
     "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
@@ -166,9 +171,10 @@ lazy val akkaHttp = (project in file("akka-http")).settings(
     "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion,
     "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
     "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
-    "ch.qos.logback" % "logback-classic" % LogBackVersion,
     "com.typesafe.akka" %% "akka-http-testkit" % AkkaHttpVersion % Test,
     "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test,
+    "ch.qos.logback" % "logback-classic" % LogBackVersion,
+    "org.scalactic" %% "scalactic" % ScalaTestVersion,
     "org.scalatest" %% "scalatest" % ScalaTestVersion % Test
   )
 )
