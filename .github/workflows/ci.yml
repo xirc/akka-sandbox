@@ -20,7 +20,7 @@ jobs:
         java-version: 11
 
     - name: Cache Coursier
-      uses: coursier/cache-action@v5
+      uses: coursier/cache-action@v6
 
     - name: Run All Check
       run: |
