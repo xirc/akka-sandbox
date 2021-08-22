@@ -8,21 +8,17 @@ object TransformationSpecConfig extends MultiNodeConfig {
   val frontend = role("frontend")
   val backend = role("backend")
 
-  commonConfig(ConfigFactory.parseString(
-    """
+  commonConfig(ConfigFactory.parseString("""
       |akka.actor.provider = cluster
       |akka.actor.allow-java-serialization = on
-      |""".stripMargin)
-  )
+      |""".stripMargin))
   nodeConfig(seed) {
-    ConfigFactory.parseString(
-      """
+    ConfigFactory.parseString("""
         |akka.cluster.roles = [ "seed" ]
         |""".stripMargin)
   }
   nodeConfig(frontend) {
-    ConfigFactory.parseString(
-      """
+    ConfigFactory.parseString("""
         |akka.cluster.roles = [ "frontend" ]
         |""".stripMargin)
   }
