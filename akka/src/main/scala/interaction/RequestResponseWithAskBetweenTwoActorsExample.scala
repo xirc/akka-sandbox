@@ -40,7 +40,7 @@ object RequestResponseWithAskBetweenTwoActorsExample extends App {
 
         context.ask(hal, Hal.OpenThePodBayDoorsPlease) {
           case Success(Hal.Response(message)) => AdaptedResponse(message)
-          case Failure(_)                     => AdaptedResponse("Request failed")
+          case Failure(_) => AdaptedResponse("Request failed")
         }
 
         val requestId = 1

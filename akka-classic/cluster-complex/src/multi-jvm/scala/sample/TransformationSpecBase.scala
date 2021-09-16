@@ -7,12 +7,11 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
 abstract class TransformationSpecBase
-  extends MultiNodeSpec(TransformationSpecConfig)
-  with AnyWordSpecLike
-  with Matchers
-  with BeforeAndAfterAll
-  with ImplicitSender
-{
+    extends MultiNodeSpec(TransformationSpecConfig)
+    with AnyWordSpecLike
+    with Matchers
+    with BeforeAndAfterAll
+    with ImplicitSender {
   override def initialParticipants: Int = roles.size
 
   override def beforeAll(): Unit = multiNodeSpecBeforeAll()

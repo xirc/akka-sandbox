@@ -11,10 +11,7 @@ final class TransformationSpecMultiJvmNode1 extends TransformationSpec
 final class TransformationSpecMultiJvmNode2 extends TransformationSpec
 final class TransformationSpecMultiJvmNode3 extends TransformationSpec
 
-class TransformationSpec
-  extends TransformationSpecBase
-  with DefaultTimeout
-{
+class TransformationSpec extends TransformationSpecBase with DefaultTimeout {
   import Messages._
   import TransformationSpecConfig._
 
@@ -27,7 +24,9 @@ class TransformationSpec
     val backendAddress = node(backend).address
 
     Cluster(system).join(seedAddress)
-    receiveN(3).collect { case MemberUp(member) => member.address }.toSet should be (
+    receiveN(3).collect { case MemberUp(member) =>
+      member.address
+    }.toSet should be(
       Set(seedAddress, frontendAddress, backendAddress)
     )
     Cluster(system).unsubscribe(self)
@@ -41,21 +40,26 @@ class TransformationSpec
       system.actorOf(TransformationBackend.props, Paths.backend)
     }
 
-    val selection = system.actorSelection(node(frontend) / "user" / Paths.frontend)
-    awaitCond({
-      selection ! GetStatus
-      expectMsgType[GetStatusResponse] == Ready
-    }, 3.seconds)
+    val selection =
+      system.actorSelection(node(frontend) / "user" / Paths.frontend)
+    awaitCond(
+      {
+        selection ! GetStatus
+        expectMsgType[GetStatusResponse] == Ready
+      },
+      3.seconds
+    )
 
     enterBarrier("wait to setup actors")
   }
 
   "execute a transformation job" in within(3.seconds) {
     runOn(seed) {
-      val selection = system.actorSelection(node(frontend) / "user" / Paths.frontend)
+      val selection =
+        system.actorSelection(node(frontend) / "user" / Paths.frontend)
       selection ! TransformationJob("The Upper Case")
       val result = expectMsgType[TransformationResult]
-      result.text should be ("THE UPPER CASE")
+      result.text should be("THE UPPER CASE")
     }
     enterBarrier("wait to execute the job")
   }
