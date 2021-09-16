@@ -37,7 +37,7 @@ final class GraphSpec extends BaseSpec(ActorSystem("graph-spec")) {
     val sharedDoubler = Flow[Int].map(_ * 2)
 
     val g = RunnableGraph.fromGraph(
-      GraphDSL.create(topHeadSink, bottomHeadSink)((_, _)) {
+      GraphDSL.createGraph(topHeadSink, bottomHeadSink)((_, _)) {
         implicit builder => (topHs, bottomHs) =>
           import GraphDSL.Implicits._
 
@@ -95,7 +95,7 @@ final class GraphSpec extends BaseSpec(ActorSystem("graph-spec")) {
 
     val resultSink = Sink.head[Int]
 
-    val g = RunnableGraph.fromGraph(GraphDSL.create(resultSink) {
+    val g = RunnableGraph.fromGraph(GraphDSL.createGraph(resultSink) {
       implicit builder => sink =>
         import GraphDSL.Implicits._
 
@@ -372,7 +372,7 @@ final class GraphSpec extends BaseSpec(ActorSystem("graph-spec")) {
 
   "example of accessing the materialized value inside the graph" in {
     val foldFlow: Flow[Int, Int, Future[Int]] =
-      Flow.fromGraph(GraphDSL.create(Sink.fold[Int, Int](0)(_ + _)) {
+      Flow.fromGraph(GraphDSL.createGraph(Sink.fold[Int, Int](0)(_ + _)) {
         implicit builder => fold =>
           import GraphDSL.Implicits._
           val flow = builder.materializedValue.mapAsync(4)(identity)
