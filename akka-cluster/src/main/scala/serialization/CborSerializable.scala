@@ -1,0 +1,3 @@
+package serialization
+
+trait CborSerializable {}

@@ -1,0 +1,8 @@
+syntax = "proto3";
+option java_package = "ddata.custom.protobuf";
+option optimize_for = SPEED;
+
+message TwoPhaseSet {
+  bytes adds = 1;
+  bytes removals = 2;
+}

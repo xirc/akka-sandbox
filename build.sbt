@@ -44,6 +44,19 @@ lazy val akka = (project in file("akka")).settings(
   )
 )
 
+lazy val akkaCluster = (project in file("akka-cluster")).settings(
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-cluster-typed" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-sharding-typed" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
+    "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
+    "ch.qos.logback" % "logback-classic" % LogBackVersion
+  ),
+  Compile / PB.targets := Seq(
+    scalapb.gen() -> (Compile / sourceManaged).value / "protobuf-scala"
+  )
+)
+
 lazy val akkaPersistence = (project in file("akka-persistence")).settings(
   name := "akka-persistence",
   libraryDependencies ++= Seq(
