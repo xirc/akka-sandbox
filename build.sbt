@@ -4,7 +4,8 @@ ThisBuild / scalacOptions ++= Seq(
   "-feature",
   "-unchecked",
   "-Xlint",
-  "-Werror"
+  "-Werror",
+  "-Xsource:3"
 )
 
 addCommandAlias(
