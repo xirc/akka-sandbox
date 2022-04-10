@@ -86,10 +86,6 @@ final class BufferSpec extends BaseSpec(ActorSystem("buffer-spec")) {
     val future2 = source.buffer(3, OverflowStrategy.dropTail).runWith(sink)
     Await.ready(future2, 15.seconds)
 
-    println("buffer dropNew")
-    val future3 = source.buffer(3, OverflowStrategy.dropNew).runWith(sink)
-    Await.ready(future3, 15.seconds)
-
     println("buffer dropHead")
     val future4 = source.buffer(3, OverflowStrategy.dropHead).runWith(sink)
     Await.ready(future4, 15.seconds)
