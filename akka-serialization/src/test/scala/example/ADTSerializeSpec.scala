@@ -19,8 +19,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
 object ADTSerializeSpec {
-  @JsonSerialize(using = classOf[DirectionJsonSerializer])
-  @JsonDeserialize(using = classOf[DirectionJsonDeserializer])
+  @JsonSerialize(`using` = classOf[DirectionJsonSerializer])
+  @JsonDeserialize(`using` = classOf[DirectionJsonDeserializer])
   sealed trait Direction
 
   object Direction {
