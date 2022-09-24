@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.9"
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
@@ -29,9 +29,9 @@ addCommandAlias(
 
 // ===
 
-val AkkaVersion = "2.6.19"
-val AkkaHttpVersion = "10.2.9"
-val ScalaTestVersion = "3.2.12"
+val AkkaVersion = "2.6.20"
+val AkkaHttpVersion = "10.2.10"
+val ScalaTestVersion = "3.2.13"
 val LogBackVersion = "1.2.11"
 
 lazy val akka = (project in file("akka")).settings(
