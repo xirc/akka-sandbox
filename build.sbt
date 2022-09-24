@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.9"
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
@@ -29,7 +29,7 @@ addCommandAlias(
 
 // ===
 
-val AkkaVersion = "2.6.19"
+val AkkaVersion = "2.6.20"
 val AkkaHttpVersion = "10.2.10"
 val ScalaTestVersion = "3.2.13"
 val LogBackVersion = "1.4.1"
