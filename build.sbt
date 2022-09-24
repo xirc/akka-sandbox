@@ -32,7 +32,7 @@ addCommandAlias(
 val AkkaVersion = "2.6.20"
 val AkkaHttpVersion = "10.2.10"
 val ScalaTestVersion = "3.2.13"
-val LogBackVersion = "1.2.11"
+val LogBackVersion = "1.4.1"
 
 lazy val akka = (project in file("akka")).settings(
   libraryDependencies ++= Seq(
