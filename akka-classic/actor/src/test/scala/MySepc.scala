@@ -127,7 +127,11 @@ class MySepc
       echo ! Some(123)
       // the following statement cannot capture Option[Int]
       val all =
-        expectMsgAllClassOf(classOf[Int], classOf[String], classOf[Some[Int]])
+        expectMsgAllClassOf[Any](
+          classOf[Int],
+          classOf[String],
+          classOf[Some[Int]]
+        )
       all(0) mustBe "123"
       all(1) mustBe 123
       all(2) mustBe Some(123)
@@ -137,7 +141,7 @@ class MySepc
       echo ! "123"
       echo ! 123
       echo ! Some(123)
-      val all = expectMsgAllConformingOf(
+      val all = expectMsgAllConformingOf[Any](
         classOf[Int],
         classOf[String],
         classOf[Option[Int]]
